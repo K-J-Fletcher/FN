@@ -1,0 +1,1692 @@
+<!doctype html>
+<html lang="en-GB" data-standalone="1">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Future Now Hub prototype with made-up data. Not a live University system.">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="favicon.png">
+<style>:root{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Future Now Hub</title>
+<style>
+/* Layout: a working tool in Future Now colours. A magenta title band, then a row of sections sitting on a magenta
+   "thread" with a node marking where you are. The same thread-and-node drawing shows the
+   pipeline and each project's stages, because the Future Now reference is meant to run
+   visibly from the first idea to the student's record. One column of content, 1120px max. */
+:root {
+  --bg: #FBF8FA; --surface: #FFFFFF; --surface-2: #F3EBEF; --ink: #111111; --ink-2: #57505A; --line: #DDD3D9;
+  --navy: #E5007E; --on-navy: #FFFFFF; --on-navy-2: #FFE3F1;
+  --amber: #E5007E; --amber-ink: #B80065; --amber-soft: #FEE6F3; --amber-on-navy: #FFFFFF;
+  --btn: #C4006B; --on-btn: #FFFFFF;
+  --ok: #1E7448; --ok-soft: #DDF1E6; --info: #275A9E; --info-soft: #DCE9F8; --wait: #8A5A00; --wait-soft: #FBEFD5;
+  --font-head: Aptos, Arial, Helvetica, sans-serif;
+  --font-body: Aptos, Arial, Helvetica, sans-serif;
+  --font-ref: "Cascadia Mono", Consolas, "SFMono-Regular", Menlo, monospace;
+  --radius: 4px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #151217; --surface: #201B22; --surface-2: #2E2631; --ink: #F4EEF2; --ink-2: #BBB0B8; --line: #43363F;
+    --navy: #E5007E; --on-navy: #FFFFFF; --on-navy-2: #FFE3F1;
+    --amber: #FF4FA8; --amber-ink: #FF7ABD; --amber-soft: #4A1532; --amber-on-navy: #FFFFFF;
+    --btn: #FF4FA8; --on-btn: #1A0A12;
+    --ok: #6FCF9B; --ok-soft: #163526; --info: #8FB8F2; --info-soft: #172B4A; --wait: #F2B33D; --wait-soft: #3A2E12;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+    --bg: #151217; --surface: #201B22; --surface-2: #2E2631; --ink: #F4EEF2; --ink-2: #BBB0B8; --line: #43363F;
+    --navy: #E5007E; --on-navy: #FFFFFF; --on-navy-2: #FFE3F1;
+    --amber: #FF4FA8; --amber-ink: #FF7ABD; --amber-soft: #4A1532; --amber-on-navy: #FFFFFF;
+    --btn: #FF4FA8; --on-btn: #1A0A12;
+    --ok: #6FCF9B; --ok-soft: #163526; --info: #8FB8F2; --info-soft: #172B4A; --wait: #F2B33D; --wait-soft: #3A2E12;
+    color-scheme: dark;
+}
+@media print {
+  :root:not(.a):not(.b) {
+  --bg: #FBF8FA; --surface: #FFFFFF; --surface-2: #F3EBEF; --ink: #111111; --ink-2: #57505A; --line: #DDD3D9;
+  --navy: #E5007E; --on-navy: #FFFFFF; --on-navy-2: #FFE3F1;
+  --amber: #E5007E; --amber-ink: #B80065; --amber-soft: #FEE6F3; --amber-on-navy: #FFFFFF;
+  --btn: #C4006B; --on-btn: #FFFFFF;
+  --ok: #1E7448; --ok-soft: #DDF1E6; --info: #275A9E; --info-soft: #DCE9F8; --wait: #8A5A00; --wait-soft: #FBEFD5;
+    color-scheme: light;
+  }
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+.wrap {
+  max-width: 1120px;
+  margin-inline: auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+h1, h2, h3 { font-family: var(--font-head); line-height: 1.2; margin: 0; text-wrap: balance; }
+h1 { font-size: 1.7rem; }
+h2 { font-size: 1.3rem; }
+h3 { font-size: 1.08rem; }
+p { margin: 0; }
+a { color: var(--info); }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, summary:focus-visible {
+  outline: 2px solid var(--amber); outline-offset: 2px;
+}
+.lede { color: var(--ink-2); max-width: 68ch; }
+.muted { color: var(--ink-2); }
+.small { font-size: .88rem; }
+.label {
+  font-size: .74rem; text-transform: uppercase; letter-spacing: .07em;
+  color: var(--ink-2); font-weight: 700;
+}
+.ref {
+  font-family: var(--font-ref); font-size: .86em; letter-spacing: .02em;
+  color: var(--amber-ink); white-space: nowrap; font-weight: 600;
+}
+.num { font-variant-numeric: tabular-nums; }
+
+/* title band */
+.top { background: var(--navy); color: var(--on-navy); }
+.top .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1.2rem; padding-block: .9rem; }
+.top .brand { flex: 1 1 260px; min-width: 0; }
+.top .brand strong { font-family: var(--font-head); font-size: 1.35rem; font-weight: 700; display: block; }
+.top .brand span { color: var(--on-navy-2); font-size: .9rem; }
+.top .btn.sec { background: transparent; color: var(--on-navy); border-color: var(--on-navy-2); }
+.top .btn.sec:hover { border-color: var(--on-navy); }
+
+/* section row on the thread */
+.tabs { background: var(--surface); border-bottom: 1px solid var(--line); }
+.tabrow {
+  display: flex; gap: 1.5rem; overflow-x: auto; padding-bottom: 10px;
+  background: linear-gradient(var(--amber), var(--amber)) 0 calc(100% - 4px) / 100% 2px no-repeat;
+  scrollbar-width: thin;
+}
+.tabrow a {
+  position: relative; flex: 0 0 auto; padding: .8rem 0 .55rem; text-decoration: none;
+  color: var(--ink-2); font-weight: 700; font-size: .95rem; white-space: nowrap;
+}
+.tabrow a:hover { color: var(--ink); }
+.tabrow a[aria-current="page"] { color: var(--ink); }
+.tabrow a[aria-current="page"]::after {
+  content: ""; position: absolute; left: 50%; bottom: -10px; width: 11px; height: 11px;
+  margin-left: -5.5px; border-radius: 50%; background: var(--amber); box-shadow: 0 0 0 3px var(--surface);
+}
+
+main.wrap { padding-block: 1.6rem 2.4rem; display: grid; gap: 1.6rem; }
+main.wrap > * { min-width: 0; }
+.head { display: grid; gap: .5rem; }
+.head-row { display: flex; flex-wrap: wrap; align-items: baseline; gap: .4rem 1rem; }
+.stack { display: grid; gap: .9rem; align-content: start; }
+.stack > * { min-width: 0; }
+.row { display: flex; flex-wrap: wrap; gap: .5rem .6rem; align-items: center; }
+.split { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 1.4rem; align-items: start; }
+.split > * { min-width: 0; }
+@media (max-width: 860px) { .split { grid-template-columns: minmax(0, 1fr); } }
+.cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.2rem 1.6rem; }
+.cols > * { min-width: 0; }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem 1.1rem; }
+.note { background: var(--surface-2); border-radius: var(--radius); padding: .7rem .9rem; font-size: .93rem; }
+.rule { border-top: 1px solid var(--line); padding-top: .9rem; }
+
+/* buttons and forms */
+.btn {
+  font: inherit; font-weight: 700; padding: .5rem .95rem; border-radius: var(--radius);
+  border: 1px solid var(--btn); background: var(--btn); color: var(--on-btn); cursor: pointer;
+  text-decoration: none; display: inline-block; line-height: 1.3;
+}
+.btn.sec { background: transparent; color: var(--ink); border-color: var(--line); }
+.btn.sec:hover { border-color: var(--ink-2); }
+.btn[disabled] { opacity: .45; cursor: not-allowed; }
+.btn.tiny { padding: .2rem .55rem; font-size: .85rem; }
+.field { display: grid; gap: .25rem; min-width: 0; }
+.field > span, .field > label { font-weight: 700; font-size: .9rem; }
+.field small { color: var(--ink-2); }
+input[type="text"], input[type="number"], select, textarea {
+  font: inherit; color: var(--ink); background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: .45rem .55rem; width: 100%; max-width: 100%;
+}
+textarea { min-height: 4.6rem; resize: vertical; }
+textarea.copy { font-family: var(--font-ref); font-size: .82rem; min-height: 8.5rem; background: var(--surface-2); }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: .8rem 1rem; }
+.checks { display: flex; flex-wrap: wrap; gap: .35rem 1.1rem; }
+.checks label { display: inline-flex; gap: .4rem; align-items: center; font-weight: 400; }
+details.adder { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+details.adder > summary { cursor: pointer; padding: .7rem 1rem; font-weight: 700; }
+details.adder > form { padding: 0 1rem 1rem; display: grid; gap: .9rem; }
+.form-msg { color: var(--wait); font-weight: 700; }
+
+/* chips */
+.chip {
+  display: inline-block; padding: .08rem .55rem; border-radius: 999px; font-size: .8rem; font-weight: 700;
+  background: var(--surface-2); color: var(--ink); white-space: nowrap;
+}
+.chip.t-live, .chip.s-live, .chip.s-approved { background: var(--ok-soft); color: var(--ok); }
+.chip.t-open, .chip.s-partner, .chip.s-module { background: var(--wait-soft); color: var(--wait); }
+.chip.t-legacy, .chip.s-matched { background: var(--info-soft); color: var(--info); }
+.chip.s-closed { background: var(--surface-2); color: var(--ink-2); }
+.chip.s-idea { background: var(--amber-soft); color: var(--amber-ink); }
+
+/* tables */
+.scroll { overflow-x: auto; }
+.tbl { width: 100%; border-collapse: collapse; font-size: .95rem; }
+.tbl th {
+  text-align: left; font-size: .74rem; text-transform: uppercase; letter-spacing: .07em; color: var(--ink-2);
+  border-bottom: 1px solid var(--line); padding: .45rem .7rem .45rem 0; white-space: nowrap;
+}
+.tbl td { padding: .65rem .7rem .65rem 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+.tbl td strong { display: block; }
+.tbl .nowrap { white-space: nowrap; }
+
+/* the thread: pipeline and stage steppers */
+.pipe { display: grid; grid-template-columns: repeat(auto-fit, minmax(118px, 1fr)); row-gap: 1.1rem; }
+.pipe a, .pipe div.step {
+  position: relative; padding: 24px .6rem 0 0; text-decoration: none; color: var(--ink); display: block; min-width: 0;
+}
+.pipe a::before, .pipe div.step::before {
+  content: ""; position: absolute; top: 7px; left: 0; right: 0; height: 2px; background: var(--amber);
+}
+.pipe a::after, .pipe div.step::after {
+  content: ""; position: absolute; top: 1px; left: 0; width: 14px; height: 14px; border-radius: 50%;
+  background: var(--surface); border: 2px solid var(--amber); box-sizing: border-box;
+}
+.pipe .n { font-family: var(--font-head); font-size: 1.9rem; font-weight: 700; line-height: 1; display: block; }
+.pipe .l { font-size: .88rem; color: var(--ink-2); display: block; margin-top: .2rem; }
+.pipe a:hover .l { color: var(--ink); text-decoration: underline; }
+.pipe div.step.done::after { background: var(--amber); }
+.pipe div.step.now::after { background: var(--amber); box-shadow: 0 0 0 4px var(--amber-soft); }
+.pipe div.step.todo::before { background: var(--line); }
+.pipe div.step.todo::after { border-color: var(--line); background: var(--bg); }
+.pipe div.step.skip::after { border-style: dashed; background: var(--bg); }
+.pipe div.step .l { color: var(--ink); font-weight: 700; }
+.pipe div.step .d { font-size: .82rem; color: var(--ink-2); display: block; }
+
+/* dashboard figures */
+.figs { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.4rem 2rem; }
+.figs section { display: grid; gap: .7rem; align-content: start; min-width: 0; border-top: 2px solid var(--ink); padding-top: .6rem; }
+.fig { display: grid; grid-template-columns: 3.4rem minmax(0, 1fr); gap: .7rem; align-items: baseline; }
+.fig b { font-family: var(--font-head); font-size: 1.75rem; line-height: 1; text-align: right; }
+.fig span { font-size: .95rem; }
+.fig small { color: var(--ink-2); display: block; }
+.bars { display: grid; gap: .4rem; align-content: start; }
+.bar { display: grid; grid-template-columns: minmax(0, 9.5rem) minmax(0, 1fr) 1.6rem; gap: .6rem; align-items: center; font-size: .9rem; }
+.bar i { display: block; height: .55rem; background: var(--surface-2); border-radius: 2px; overflow: hidden; }
+.bar i b { display: block; height: 100%; background: var(--ink-2); }
+.bar span:last-child { text-align: right; }
+ul.plain, ol.plain { margin: 0; padding-left: 1.2rem; display: grid; gap: .35rem; }
+
+/* formats */
+.fmt { border-top: 2px solid var(--ink); padding-top: .6rem; display: grid; gap: .45rem; align-content: start; }
+.fmt dl { display: grid; grid-template-columns: 6.2rem minmax(0, 1fr); gap: .2rem .7rem; margin: 0; font-size: .93rem; }
+.fmt dt { color: var(--ink-2); }
+.fmt dd { margin: 0; }
+.fmt ul { margin: 0; padding-left: 1.1rem; }
+
+/* documents: brief, project page, record */
+.doc { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.doc-band { background: var(--navy); color: var(--on-navy); padding: .85rem 1.2rem; display: flex; flex-wrap: wrap; gap: .3rem 1rem; align-items: baseline; justify-content: space-between; border-bottom: 3px solid var(--amber); }
+.doc-band .kicker { font-size: .74rem; text-transform: uppercase; letter-spacing: .12em; color: var(--on-navy-2); font-weight: 700; display: block; }
+.doc-band strong { font-family: var(--font-head); font-size: 1.15rem; }
+.doc-band .ref { color: var(--amber-on-navy); font-size: 1rem; }
+.doc-body { padding: 1.1rem 1.2rem 1.3rem; display: grid; gap: 1rem; }
+.doc-body h2 { font-size: 1.45rem; }
+.doc-body h3 { font-size: 1rem; font-family: var(--font-body); font-weight: 700; margin-bottom: .2rem; }
+.doc-body section { max-width: 68ch; }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: .7rem 1.2rem; border-block: 1px solid var(--line); padding-block: .8rem; }
+.facts div { min-width: 0; }
+.facts span { display: block; }
+blockquote { margin: 0; padding-left: .9rem; border-left: 3px solid var(--amber); font-family: var(--font-head); font-size: 1.08rem; font-style: italic; }
+blockquote footer { font-family: var(--font-body); font-style: normal; font-size: .9rem; color: var(--ink-2); margin-top: .3rem; }
+.stamp { font-size: .74rem; text-transform: uppercase; letter-spacing: .1em; color: var(--ink-2); font-weight: 700; }
+.record-name { font-family: var(--font-head); font-size: 1.9rem; line-height: 1.15; overflow-wrap: anywhere; }
+.skills { display: flex; flex-wrap: wrap; gap: .4rem; }
+.skill { font: inherit; font-size: .88rem; padding: .2rem .7rem; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+.skill[aria-pressed="true"] { background: var(--btn); color: var(--on-btn); border-color: var(--btn); }
+#rec-image-box img { border: 1px solid var(--line); border-radius: var(--radius); display: block; }
+
+/* showcase */
+.theme { display: grid; gap: .8rem; border-top: 2px solid var(--ink); padding-top: .7rem; }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: .9rem; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: .85rem .95rem; display: grid; gap: .45rem; align-content: start; text-decoration: none; color: var(--ink); min-width: 0; }
+.card:hover { border-color: var(--ink-2); }
+.card h3 { font-size: 1.05rem; }
+.card .meta { font-size: .88rem; color: var(--ink-2); }
+
+/* partners: four rungs */
+.rungs { display: inline-flex; gap: 3px; vertical-align: middle; margin-right: .45rem; }
+.rungs i { width: 14px; height: 8px; background: var(--surface-2); border-radius: 1px; display: block; }
+.rungs i.on { background: var(--amber); }
+
+.log { margin: 0; padding: 0; list-style: none; display: grid; gap: .3rem; font-size: .9rem; }
+.log time { color: var(--ink-2); margin-right: .5rem; white-space: nowrap; }
+
+.foot { padding-block: 0 2rem; color: var(--ink-2); font-size: .86rem; }
+.toast {
+  position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  background: var(--ink); color: var(--bg); padding: .55rem 1rem; border-radius: var(--radius); font-weight: 700;
+  max-width: calc(100% - 32px); z-index: 20;
+}
+@media (max-width: 520px) {
+  h1 { font-size: 1.45rem; }
+  .bar { grid-template-columns: minmax(0, 7rem) minmax(0, 1fr) 1.6rem; }
+}
+
+/* Future Now branding */
+.top .wrap { padding-block: .7rem; }
+.top .brand { display: flex; align-items: center; gap: 1rem; }
+.top .brand img { height: 84px; width: auto; display: block; flex: 0 0 auto; }
+.top .brand div { min-width: 0; }
+.top .brand strong { font-style: italic; }
+h1, h2 { font-style: italic; color: var(--amber); }
+.doc-band { border-bottom-color: var(--ink); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.doc-body h2 { color: var(--ink); }
+.record-name { font-weight: 700; }
+@media print {
+  body * { visibility: hidden; }
+  .print-me, .print-me * { visibility: visible; }
+  .print-me { position: absolute; left: 0; top: 0; width: 100%; border: 0; }
+}
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <img id="fn-logo" alt="Future Now. Sheffield Hallam University, College of Social Sciences and Arts" src="data:image/png;base64,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">
+      <div>
+        <strong>Future Now Hub</strong>
+        <span>Prototype with made-up data. Not a live University system.</span>
+      </div>
+    </div>
+    <button type="button" class="btn sec" id="btn-reset" data-action="reset">Reset demo data</button>
+  </div>
+</header>
+<nav class="tabs" aria-label="Sections">
+  <div class="wrap">
+    <div class="tabrow" id="tabrow">
+      <a href="#dashboard" data-nav="dashboard">Dashboard</a>
+      <a href="#formats" data-nav="formats">Formats</a>
+      <a href="#modules" data-nav="modules">Modules</a>
+      <a href="#challenges" data-nav="challenges">Challenges</a>
+      <a href="#projects" data-nav="projects">Projects</a>
+      <a href="#showcase" data-nav="showcase">Showcase</a>
+      <a href="#record" data-nav="record">Student record</a>
+      <a href="#partners" data-nav="partners">Partners</a>
+      <a href="#staff" data-nav="staff">Staff</a>
+    </div>
+  </div>
+</nav>
+<main class="wrap" id="app"></main>
+<footer class="foot wrap">
+  <p>Every organisation, person, module and figure here is invented for demonstration. Changes you make are kept only in this browser.</p>
+</footer>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script>
+(function () {
+  'use strict';
+
+  var STORE_KEY = 'fnhub-demo-v3';
+  var DEMO_TODAY = '2028-02-14';
+  var STANDALONE = document.documentElement.getAttribute('data-standalone') === '1';
+  var VIEWS = ['dashboard', 'formats', 'modules', 'challenges', 'projects', 'showcase', 'record', 'partners', 'staff'];
+
+  var INST = {
+    ilass: { code: 'ILaSS', area: 'Law and Social Sciences' },
+    scii: { code: 'SCII', area: 'Creative Industries' },
+    sioe: { code: 'SIOE', area: 'Education' }
+  };
+  var LEADS = { ilass: 'Dr Rowan Hale', scii: 'Mina Castellanos', sioe: 'Dr Tobi Adeyemi' };
+  var PLATFORMS = ['Enabling Healthier Lives', 'Building Stronger Communities', 'Driving Future Economies'];
+  var SOURCES = ['Partner direct', 'Alumni', 'Researcher', 'Staff contact', 'Central Applied Projects', 'Open question', 'Past brief'];
+
+  var TIERS = {
+    live: { name: 'Live', desc: 'A partner takes part: a briefing, questions and feedback on the work.' },
+    open: { name: 'Open', desc: 'A real published question, such as one from a public body’s list of research questions. No partner time is needed, and the output can be sent to the body that asked.' },
+    legacy: { name: 'Legacy', desc: 'A past live brief reused, with the partner’s consent, as a simulation. The partner is not involved again.' }
+  };
+
+  var FORMATS = [
+    { id: 'sprint', name: 'Insight sprint', levels: 'Levels 4 to 5', length: '4 to 6 weeks', group: 'A whole seminar group (20 to 25)',
+      output: 'A two-page insight summary and a short presentation',
+      partner: ['One 30-minute briefing, which can be recorded', 'Written answers to students’ questions', 'A short feedback form at the end'] },
+    { id: 'consult', name: 'Consultancy project', levels: 'Levels 5 to 6', length: '10 to 12 weeks', group: 'Teams of 4 to 6',
+      output: 'A report with recommendations and a pitch to the partner',
+      partner: ['A kick-off meeting', 'A mid-point check-in', 'The final pitch, with feedback'] },
+    { id: 'research', name: 'Research brief', levels: 'Levels 6 to 7', length: '12 weeks or more', group: 'Individuals or pairs',
+      output: 'A research report with an executive summary',
+      partner: ['Agreeing the question', 'Access to data or people where needed', 'One feedback meeting'] },
+    { id: 'commission', name: 'Creative commission', levels: 'Levels 5 to 7', length: '6 to 12 weeks', group: 'Individuals or studio teams',
+      output: 'Finished creative work with a written rationale',
+      partner: ['A briefing', 'One critique session', 'Sign-off and feedback'] },
+    { id: 'policy', name: 'Policy lab', levels: 'Levels 6 to 7', length: '8 to 10 weeks', group: 'Teams of 4 to 6',
+      output: 'A policy brief and a roundtable with the partner',
+      partner: ['Setting the policy question', 'Attending the roundtable'] },
+    { id: 'community', name: 'Community project', levels: 'Levels 4 to 6', length: '6 to 12 weeks', group: 'Small groups',
+      output: 'A resource, workshop or event delivered with the partner',
+      partner: ['A co-design session', 'Hosting or attending the delivery', 'A short feedback form'] },
+    { id: 'simulation', name: 'Simulation', levels: 'Any level', length: 'Set by the module', group: 'Set by the module',
+      output: 'Set by the module, using an open question or a past brief',
+      partner: ['Nothing. The partner is not involved'] }
+  ];
+
+  var INTERESTS = [
+    { id: 'challenge', label: 'Another challenge', route: 'the Future Now lead' },
+    { id: 'placement', label: 'A short placement or internship', route: 'the central careers and employer team' },
+    { id: 'recruit', label: 'Recruiting graduates', route: 'the central careers and employer team' },
+    { id: 'training', label: 'Training for their staff', route: 'the CPD lead' },
+    { id: 'research', label: 'Research or evaluation', route: 'an IKE Fellow' },
+    { id: 'talk', label: 'Giving a guest talk', route: 'the module leader' },
+    { id: 'prize', label: 'Sponsoring a showcase prize', route: 'the showcase organiser' }
+  ];
+
+  var SKILLS = ['Research', 'Analysis', 'Teamwork', 'Working with a client', 'Presenting', 'Project management', 'Creative production', 'Policy writing'];
+
+  var STAGES = [
+    { id: 'matched', label: 'Brief drafted' },
+    { id: 'partner', label: 'With partner' },
+    { id: 'module', label: 'With module leader' },
+    { id: 'approved', label: 'Approved' },
+    { id: 'live', label: 'Live' },
+    { id: 'closed', label: 'Closed' }
+  ];
+
+  var THEMES = [
+    { id: 't1', title: 'Nature on our doorstep', platform: 'Building Stronger Communities', anchor: 'p1' },
+    { id: 't2', title: 'Living well to the end', platform: 'Enabling Healthier Lives', anchor: 'p2' },
+    { id: 't3', title: 'Good work in South Yorkshire', platform: 'Driving Future Economies', anchor: 'p6' },
+    { id: 't4', title: 'Homes and belonging', platform: 'Building Stronger Communities', anchor: 'p4' }
+  ];
+
+  function seed() {
+    return {
+      modules: [
+        { id: 'm1', code: 'LAW5-P', title: 'Law in Practice', inst: 'ilass', subject: 'Law', level: 5, semester: 'S2', cohort: 120, formats: ['community', 'consult'], leader: 'Dr Hannah Whitlock', capacity: 4 },
+        { id: 'm2', code: 'CRM5-A', title: 'Applied Criminology', inst: 'ilass', subject: 'Criminology', level: 5, semester: 'S1', cohort: 90, formats: ['sprint', 'consult', 'policy'], leader: 'Dr Marcus Bello', capacity: 3 },
+        { id: 'm3', code: 'GEO6-C', title: 'Geography Consultancy Project', inst: 'ilass', subject: 'Geography and Environment', level: 6, semester: 'S1', cohort: 38, formats: ['consult', 'research'], leader: 'Dr Ines Carvalho', capacity: 2 },
+        { id: 'm4', code: 'PSY4-R', title: 'Psychology in the Real World', inst: 'ilass', subject: 'Psychology', level: 4, semester: 'S2', cohort: 160, formats: ['sprint', 'simulation'], leader: 'Dr Leon Fischer', capacity: 6 },
+        { id: 'm5', code: 'POL6-P', title: 'Policy Analysis in Action', inst: 'ilass', subject: 'Politics', level: 6, semester: 'S1', cohort: 32, formats: ['policy', 'research'], leader: 'Dr Aisha Rahman', capacity: 2 },
+        { id: 'm6', code: 'SOC7-R', title: 'Applied Research Project', inst: 'ilass', subject: 'Sociology', level: 7, semester: 'S2', cohort: 24, formats: ['research'], leader: 'Prof. Daniel Okoye', capacity: 8 },
+        { id: 'm7', code: 'GDS5-L', title: 'Graphic Design: Live Brief', inst: 'scii', subject: 'Graphic Design', level: 5, semester: 'S1', cohort: 48, formats: ['commission'], leader: 'Mina Castellanos', capacity: 3 },
+        { id: 'm8', code: 'DMP6-S', title: 'Digital Storytelling', inst: 'scii', subject: 'Digital Media', level: 6, semester: 'S2', cohort: 30, formats: ['commission', 'community'], leader: 'Joel Achterberg', capacity: 3 },
+        { id: 'm9', code: 'PRD6-S', title: 'Product Design Studio', inst: 'scii', subject: 'Product Design', level: 6, semester: 'S1', cohort: 26, formats: ['commission', 'consult'], leader: 'Freya Lindqvist', capacity: 3 },
+        { id: 'm10', code: 'EDU5-B', title: 'Learning Beyond the Classroom', inst: 'sioe', subject: 'Education Studies', level: 5, semester: 'S2', cohort: 56, formats: ['community', 'sprint'], leader: 'Dr Tobi Adeyemi', capacity: 4 },
+        { id: 'm11', code: 'EYC4-C', title: 'Early Years in the Community', inst: 'sioe', subject: 'Early Years', level: 4, semester: 'S1', cohort: 70, formats: ['sprint', 'simulation'], leader: 'Sarah Penhaligon', capacity: 3 },
+        { id: 'm12', code: 'EDU6-R', title: 'Education Research in Practice', inst: 'sioe', subject: 'Education Studies', level: 6, semester: 'S2', cohort: 44, formats: ['research', 'policy'], leader: 'Dr Kwame Mensah', capacity: 5 }
+      ],
+      partners: [
+        { id: 'p1', name: 'Brightwater Wildlife Trust', sector: 'Charity, environment', source: 'Staff contact', contact: 'Elena Marsh, Engagement Manager', extras: ['Guest talk'],
+          followOn: { type: 'Evaluation of a visitor-monitoring pilot', value: 6800, status: 'Proposal sent', staff: 'Dr Ines Carvalho' } },
+        { id: 'p2', name: 'Lanternhouse Hospice', sector: 'Charity, health', source: 'Alumni', contact: 'Tom Gallagher, Community Fundraiser (LLB 2016)', extras: ['Short placement'], followOn: null },
+        { id: 'p3', name: 'Cobblestone Museums Trust', sector: 'Culture', source: 'Partner direct', contact: 'Yasmin Farouk, Head of Learning', extras: [], followOn: null },
+        { id: 'p4', name: 'Northgate Housing Association', sector: 'Housing', source: 'Central Applied Projects', contact: 'Derek Osei, Resident Engagement Lead', extras: [], followOn: null },
+        { id: 'p5', name: 'Three Rivers Schools Trust', sector: 'Education', source: 'Alumni', contact: 'Claire Dunmore, Deputy Chief Executive (PGCE 2009)', extras: [], followOn: null },
+        { id: 'p6', name: 'Regional Skills Partnership', sector: 'Public body', source: 'Researcher', contact: 'Imran Sadiq, Policy Manager', extras: ['Research partner'], followOn: null },
+        { id: 'p7', name: 'Tinder & Flint Studio', sector: 'Small business, creative', source: 'Alumni', contact: 'Jess Hartley, Co-founder (BA Graphic Design 2019)', extras: [], followOn: null },
+        { id: 'p8', name: 'Open Door Advice Network', sector: 'Charity, advice', source: 'Staff contact', contact: 'Martin Kovac, Network Coordinator', extras: [], followOn: null }
+      ],
+      challenges: [
+        { id: 'c1', title: 'Why do visitors stop at the car park?', partnerId: 'p1', format: 'consult', tier: 'live', source: 'Staff contact', platform: PLATFORMS[1], themeId: 't1', semester: 'S1', consent: true,
+          issue: 'Most visitors to our three reserves stay close to the car park. We want to know why, and what would encourage them to explore further.',
+          background: 'Counter data shows that footfall drops sharply beyond the first 300 metres. We have not had the capacity to study it.',
+          outcome: 'Evidence on what holds visitors back, and practical, low-cost recommendations we could test next season.' },
+        { id: 'c2', title: 'A campaign to bring first-time visitors to local reserves', partnerId: 'p1', format: 'commission', tier: 'live', source: 'Staff contact', platform: PLATFORMS[1], themeId: 't1', semester: 'S1', consent: true,
+          issue: 'Many local people have never visited a reserve. We need a campaign that speaks to people who do not see nature sites as being for them.',
+          background: 'Our current materials are aimed at existing members.',
+          outcome: 'A campaign concept with sample assets that we could run on social media and in community venues.' },
+        { id: 'c14', title: 'Who doesn’t visit, and what would bring them in?', partnerId: 'p3', format: 'sprint', tier: 'live', source: 'Partner direct', platform: PLATFORMS[1], themeId: null, semester: 'S1', consent: true,
+          issue: 'Families with children under five are rare visitors to our museums. We want to understand why.',
+          background: 'Entry is free, but visitor surveys reach only the people who already come.',
+          outcome: 'A summary of the likely barriers and some ideas we could try without new funding.' },
+        { id: 'c3', title: 'Outdoor learning packs for Key Stage 2 visits', partnerId: 'p1', format: 'community', tier: 'live', source: 'Staff contact', platform: PLATFORMS[1], themeId: 't1', semester: 'S2', consent: true,
+          issue: 'Schools ask us for ready-made activities for class visits, and we have very little to offer.',
+          background: 'Around forty primary classes visit each year. Teachers want activities linked to the curriculum.',
+          outcome: 'Tested activity packs that teachers can use before, during and after a visit.' },
+        { id: 'c4', title: 'Talking about wills and planning ahead', partnerId: 'p2', format: 'community', tier: 'live', source: 'Alumni', platform: PLATFORMS[0], themeId: 't2', semester: 'S2', consent: true,
+          issue: 'Families often arrive at the hospice without having talked about wills or wishes. We want plain-language resources that make those conversations easier.',
+          background: 'Our community team runs information sessions but has no legal content it can rely on.',
+          outcome: 'Clear, accurate public information materials and a community session the hospice can repeat.' },
+        { id: 'c5', title: 'What stops people using our community services?', partnerId: 'p2', format: 'sprint', tier: 'live', source: 'Alumni', platform: PLATFORMS[0], themeId: 't2', semester: 'S2', consent: true,
+          issue: 'Our drop-in and befriending services are under-used in some neighbourhoods.',
+          background: 'Referral data shows large gaps between areas with similar levels of need.',
+          outcome: 'A summary of the likely barriers, drawn from published evidence, with ideas we could test.' },
+        { id: 'c6', title: 'Stories of care: short films with our volunteers', partnerId: 'p2', format: 'commission', tier: 'live', source: 'Alumni', platform: PLATFORMS[0], themeId: 't2', semester: 'S2', consent: true,
+          issue: 'We want to recruit younger volunteers and have no film that shows what volunteering is like.',
+          background: 'Volunteers are willing to take part. Filming must respect patients’ privacy.',
+          outcome: 'Three short films suitable for social media and recruitment events.' },
+        { id: 'c7', title: 'Which entry-level jobs are hardest to fill, and why?', partnerId: 'p6', format: 'policy', tier: 'live', source: 'Researcher', platform: PLATFORMS[2], themeId: 't3', semester: 'S1', consent: true, researcher: 'Dr Aisha Rahman',
+          issue: 'Employers in the region report entry-level vacancies they cannot fill, while young people report that they cannot find work.',
+          background: 'This links to continuing research on youth employment in the region.',
+          outcome: 'A policy brief setting out the evidence and the options, discussed at a roundtable with the Partnership.' },
+        { id: 'c8', title: 'Tenant voice: how do residents want to be heard?', partnerId: 'p4', format: 'research', tier: 'live', source: 'Central Applied Projects', platform: PLATFORMS[1], themeId: 't4', semester: 'S2', consent: true,
+          issue: 'New regulation expects us to show how tenants influence decisions. Our panels attract the same few people.',
+          background: 'We house around 6,000 households. Survey response rates are falling.',
+          outcome: 'Research with residents on how they would prefer to take part, with recommendations for our engagement plan.' },
+        { id: 'c9', title: 'A brand refresh for a growing studio', partnerId: 'p7', format: 'commission', tier: 'live', source: 'Alumni', platform: PLATFORMS[2], themeId: null, semester: 'S1', consent: true,
+          issue: 'We have grown from two people to nine, and our identity no longer fits.',
+          background: 'The studio was founded by two graduates. We work with clients in culture and hospitality.',
+          outcome: 'Fresh identity concepts that we can take forward with a designer.' },
+        { id: 'c10', title: 'Do breakfast clubs change attendance?', partnerId: 'p5', format: 'research', tier: 'live', source: 'Alumni', platform: PLATFORMS[1], themeId: null, semester: 'S2', consent: true,
+          issue: 'We fund breakfast clubs in six schools and want to know whether they affect attendance and punctuality.',
+          background: 'Attendance data is available in anonymised form.',
+          outcome: 'An analysis we can share with governors, and advice on what else to measure.' },
+        { id: 'c11', title: 'How can local areas reduce the barriers to active travel?', partnerId: null, format: 'simulation', tier: 'open', source: 'Open question', platform: PLATFORMS[0], themeId: null, semester: 'any', consent: true,
+          issue: 'Public bodies have asked what stops people walking, wheeling and cycling for short journeys, and which interventions work.',
+          background: 'Taken from a published list of research questions. No partner time is needed. The output can be sent to the body that asked.',
+          outcome: 'A short evidence review with recommendations.' },
+        { id: 'c12', title: 'Visitor-flow consultancy (reusing FN-27-001)', partnerId: 'p1', format: 'simulation', tier: 'legacy', source: 'Past brief', platform: PLATFORMS[1], themeId: 't1', semester: 'any', consent: false,
+          issue: 'Most visitors to the Trust’s three reserves stay close to the car park. Why, and what would encourage them to explore further?',
+          background: 'A past live brief, reused with the Trust’s consent. Students work from the original brief and data. The Trust is not involved again.',
+          outcome: 'Recommendations that can be compared with what the original teams proposed.' },
+        { id: 'c13', title: 'Making benefits advice easier to find online', partnerId: 'p8', format: 'consult', tier: 'live', source: 'Staff contact', platform: PLATFORMS[1], themeId: null, semester: 'S1', consent: true,
+          issue: 'People in crisis struggle to find the right advice service on our website.',
+          background: 'We are a network of eleven advice charities sharing one site.',
+          outcome: 'User-tested recommendations for the structure and wording of the site.' }
+      ],
+      projects: [
+        { ref: 'FN-27-001', challengeId: 'c1', moduleId: 'm3', stage: 'closed', period: 'Semester 1, 2027/28',
+          log: [{ date: '2027-06-14', text: 'Brief drafted' }, { date: '2027-06-22', text: 'Partner confirmed the brief' }, { date: '2027-07-01', text: 'Module leader approved' }, { date: '2027-09-27', text: 'Project started' }, { date: '2027-12-15', text: 'Project closed' }],
+          closeout: { students: 38, rating: 5, quoteConsent: true, interests: ['challenge', 'research', 'training'],
+            outputs: 'Six consultancy reports and a combined visitor-flow map of the three reserves.',
+            summary: 'Visitors stay within 300 metres of the car park at all three reserves. Unclear signs and uncertainty about path conditions are the main barriers. Teams recommended waymarked short loops, path-condition notices at the entrances and a pilot of guided first visits.',
+            quote: 'The teams gave us evidence for things we had only guessed at. Two of the recommendations are in next year’s site plan.' } },
+        { ref: 'FN-27-002', challengeId: 'c2', moduleId: 'm7', stage: 'closed', period: 'Semester 1, 2027/28',
+          log: [{ date: '2027-06-16', text: 'Brief drafted' }, { date: '2027-06-24', text: 'Partner confirmed the brief' }, { date: '2027-07-05', text: 'Module leader approved' }, { date: '2027-10-04', text: 'Project started' }, { date: '2027-12-10', text: 'Project closed' }],
+          closeout: { students: 48, rating: 4, quoteConsent: true, interests: ['challenge', 'prize'],
+            outputs: 'Twelve campaign concepts. The Trust selected one to run on its social channels.',
+            summary: 'Existing materials speak to people who already visit. The strongest concepts used local landmarks and short, plain invitations, and showed people who look like the audience the Trust wants to reach.',
+            quote: 'We chose one campaign and are running it this spring. It speaks to people we have never reached before.' } },
+        { ref: 'FN-27-003', challengeId: 'c14', moduleId: 'm11', stage: 'closed', period: 'Semester 1, 2027/28',
+          log: [{ date: '2027-07-08', text: 'Brief drafted' }, { date: '2027-07-15', text: 'Partner confirmed the brief' }, { date: '2027-09-06', text: 'Module leader approved' }, { date: '2027-10-18', text: 'Project started' }, { date: '2027-11-26', text: 'Project closed' }],
+          closeout: { students: 70, rating: 5, quoteConsent: true, interests: ['placement', 'talk'],
+            outputs: 'An insight summary from three seminar groups and a presentation to the Trust’s learning team.',
+            summary: 'Families with children under five rarely visit because they are unsure the museums welcome very young children. Students pointed to confusion about pricing, access with buggies and the lack of clear information about facilities.',
+            quote: 'A clear, honest picture of how we look to families with small children. We have already changed our website.' } },
+        { ref: 'FN-27-004', challengeId: 'c3', moduleId: 'm10', stage: 'live', period: 'Semester 2, 2027/28', students: 56,
+          log: [{ date: '2027-10-11', text: 'Brief drafted' }, { date: '2027-10-19', text: 'Partner confirmed the brief' }, { date: '2027-11-02', text: 'Module leader approved' }, { date: '2028-01-24', text: 'Project started' }], closeout: null },
+        { ref: 'FN-27-005', challengeId: 'c4', moduleId: 'm1', stage: 'live', period: 'Semester 2, 2027/28', students: 30,
+          log: [{ date: '2027-10-20', text: 'Brief drafted' }, { date: '2027-11-03', text: 'Partner confirmed the brief' }, { date: '2027-11-17', text: 'Module leader approved' }, { date: '2028-01-31', text: 'Project started' }], closeout: null },
+        { ref: 'FN-27-006', challengeId: 'c5', moduleId: 'm4', stage: 'approved', period: 'Semester 2, 2027/28', students: 25,
+          log: [{ date: '2027-12-01', text: 'Brief drafted' }, { date: '2027-12-09', text: 'Partner confirmed the brief' }, { date: '2028-01-12', text: 'Module leader approved' }], closeout: null },
+        { ref: 'FN-27-007', challengeId: 'c6', moduleId: 'm8', stage: 'module', period: 'Semester 2, 2027/28', students: 30,
+          log: [{ date: '2028-01-18', text: 'Brief drafted' }, { date: '2028-02-02', text: 'Partner confirmed the brief' }], closeout: null },
+        { ref: 'FN-28-001', challengeId: 'c7', moduleId: 'm5', stage: 'partner', period: 'Semester 1, 2028/29',
+          log: [{ date: '2028-02-01', text: 'Brief drafted' }, { date: '2028-02-05', text: 'Brief sent to the partner' }], closeout: null },
+        { ref: 'FN-28-002', challengeId: 'c8', moduleId: 'm6', stage: 'matched', period: 'Semester 2, 2028/29',
+          log: [{ date: '2028-02-12', text: 'Brief drafted' }], closeout: null }
+      ],
+      fellows: [
+        { id: 'f1', name: 'Dr Ines Carvalho', area: 'Geography and Environment', inst: 'ilass', pdr: true, evidence: true, proposal: true, note: 'Costed proposal sent to Brightwater Wildlife Trust' },
+        { id: 'f2', name: 'Mina Castellanos', area: 'Graphic Design', inst: 'scii', pdr: true, evidence: true, proposal: true, note: 'Costed proposal: brand workshops for small charities' },
+        { id: 'f3', name: 'Dr Hannah Whitlock', area: 'Law', inst: 'ilass', pdr: true, evidence: true, proposal: false, note: 'Scoping staff training with Lanternhouse Hospice' },
+        { id: 'f4', name: 'Dr Aisha Rahman', area: 'Politics', inst: 'ilass', pdr: true, evidence: true, proposal: false, note: 'Proposal in draft with the Regional Skills Partnership' },
+        { id: 'f5', name: 'Dr Kwame Mensah', area: 'Education Studies', inst: 'sioe', pdr: true, evidence: false, proposal: false, note: 'Paired with a contract researcher this term' },
+        { id: 'f6', name: 'Joel Achterberg', area: 'Digital Media', inst: 'scii', pdr: false, evidence: false, proposal: false, note: 'Joined the cohort in January' }
+      ],
+      routed: ['FN-27-001:research']
+    };
+  }
+
+  /* ---------- state ---------- */
+  var state = load();
+  var ui = { stage: 'all', scInst: 'all', scPlat: 'all', staff: 'Dr Ines Carvalho', resetArmed: false, partnersReady: false };
+  var rec = { ref: 'FN-27-001', name: '', contribution: '', skills: [] }; // never saved anywhere
+  var currentRoute = '';
+  var downloadsApi = null;
+
+  function load() {
+    try {
+      var raw = window.localStorage.getItem(STORE_KEY);
+      if (raw) {
+        var s = JSON.parse(raw);
+        if (s && Array.isArray(s.modules) && Array.isArray(s.projects) && Array.isArray(s.challenges) && Array.isArray(s.partners) && Array.isArray(s.fellows) && Array.isArray(s.routed)) return s;
+      }
+    } catch (e) { /* storage unavailable: use the seed */ }
+    return seed();
+  }
+  function save() {
+    try { window.localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
+  }
+
+  /* ---------- helpers ---------- */
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (ch) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch];
+    });
+  }
+  function fmtDate(iso) {
+    var d = new Date(iso + 'T12:00:00');
+    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+  function format(id) { return FORMATS.filter(function (f) { return f.id === id; })[0] || FORMATS[0]; }
+  function mod(id) { return state.modules.filter(function (m) { return m.id === id; })[0] || null; }
+  function chal(id) { return state.challenges.filter(function (c) { return c.id === id; })[0] || null; }
+  function partner(id) { return state.partners.filter(function (p) { return p.id === id; })[0] || null; }
+  function proj(ref) { return state.projects.filter(function (p) { return p.ref === ref; })[0] || null; }
+  function theme(id) { return THEMES.filter(function (t) { return t.id === id; })[0] || null; }
+  function interest(id) { return INTERESTS.filter(function (i) { return i.id === id; })[0] || { id: id, label: id, route: 'the Future Now lead' }; }
+  function projectFor(c) { return state.projects.filter(function (p) { return p.challengeId === c.id; })[0] || null; }
+  function projectsOn(m) { return state.projects.filter(function (p) { return p.moduleId === m.id; }); }
+  function partnerName(c) {
+    var p = partner(c.partnerId);
+    if (c.tier === 'open' || !p) return 'Published research question';
+    return p.name;
+  }
+  function semName(s) { return s === 'S1' ? 'Semester 1' : s === 'S2' ? 'Semester 2' : 'either semester'; }
+  function stageIndex(id) { for (var i = 0; i < STAGES.length; i++) if (STAGES[i].id === id) return i; return 0; }
+  function stageLabel(id) { return STAGES[stageIndex(id)].label; }
+  function studentsOn(pr) {
+    if (pr.closeout) return pr.closeout.students;
+    if (pr.students) return pr.students;
+    var m = mod(pr.moduleId);
+    return m ? m.cohort : 0;
+  }
+  function firstName(contact) { return String(contact || '').split(/[ ,]/)[0] || 'colleague'; }
+  function contactName(contact) { return String(contact || '').split(',')[0]; }
+  function chipTier(t, long) { return '<span class="chip t-' + esc(t) + '">' + esc(TIERS[t] ? TIERS[t].name : t) + (long ? ' tier' : '') + '</span>'; }
+  function chipStage(s) { return '<span class="chip s-' + esc(s) + '">' + esc(stageLabel(s)) + '</span>'; }
+  function countBy(list, fn) {
+    var out = {};
+    list.forEach(function (x) { var k = fn(x); out[k] = (out[k] || 0) + 1; });
+    return out;
+  }
+  function bars(counts, order) {
+    var keys = order || Object.keys(counts).sort(function (a, b) { return counts[b] - counts[a]; });
+    var max = 1;
+    keys.forEach(function (k) { if ((counts[k] || 0) > max) max = counts[k]; });
+    return '<div class="bars">' + keys.map(function (k) {
+      var n = counts[k] || 0;
+      return '<div class="bar"><span>' + esc(k) + '</span><i><b style="width:' + Math.round(n / max * 100) + '%"></b></i><span class="num">' + n + '</span></div>';
+    }).join('') + '</div>';
+  }
+  function partnerStats(p) {
+    var chs = state.challenges.filter(function (c) { return c.partnerId === p.id && c.tier !== 'open'; });
+    var projs = state.projects.filter(function (pr) { return chs.some(function (c) { return c.id === pr.challengeId; }); });
+    var types = [];
+    if (projs.length) types.push(projs.length === 1 ? '1 student challenge' : projs.length + ' student challenges');
+    (p.extras || []).forEach(function (e) { types.push(e); });
+    var rung = 0;
+    if (projs.length) rung = 1;
+    if (projs.length >= 2 || (projs.length >= 1 && (p.extras || []).length >= 1)) rung = 2;
+    if (p.followOn) rung = 3;
+    if (p.followOn && p.followOn.large) rung = 4;
+    return { chs: chs, projs: projs, types: types, rung: rung };
+  }
+  var RUNGS = ['New contact', 'Student challenge', 'Deeper engagement', 'Paid follow-on', 'Larger partnership'];
+  function rungMeter(n) {
+    var s = '<span class="rungs" aria-hidden="true">';
+    for (var i = 1; i <= 4; i++) s += '<i class="' + (i <= n ? 'on' : '') + '"></i>';
+    return s + '</span>';
+  }
+  function pendingRequests() {
+    var out = [];
+    state.projects.forEach(function (pr) {
+      if (!pr.closeout) return;
+      var c = chal(pr.challengeId);
+      pr.closeout.interests.forEach(function (i) {
+        var key = pr.ref + ':' + i;
+        out.push({ key: key, ref: pr.ref, interest: interest(i), partner: partnerName(c), partnerId: c.partnerId, done: state.routed.indexOf(key) !== -1 });
+      });
+    });
+    return out;
+  }
+  function nextRef() {
+    var max = 0;
+    state.projects.forEach(function (p) {
+      var m = /^FN-28-(\d+)$/.exec(p.ref);
+      if (m && Number(m[1]) > max) max = Number(m[1]);
+    });
+    var n = String(max + 1);
+    while (n.length < 3) n = '0' + n;
+    return 'FN-28-' + n;
+  }
+  function nextId(list, prefix) {
+    var max = 0;
+    list.forEach(function (x) {
+      var m = new RegExp('^' + prefix + '(\\d+)$').exec(x.id);
+      if (m && Number(m[1]) > max) max = Number(m[1]);
+    });
+    return prefix + (max + 1);
+  }
+  function fit(c, m) {
+    var f = format(c.format);
+    var reasons = [];
+    var hosts = m.formats.indexOf(c.format) !== -1;
+    reasons.push({ ok: hosts, text: hosts ? 'Hosts the ' + f.name.toLowerCase() + ' format' : 'Does not host the ' + f.name.toLowerCase() + ' format' });
+    var left = m.capacity - projectsOn(m).length;
+    reasons.push({ ok: left > 0, text: left > 0 ? left + ' of ' + m.capacity + ' places free' : 'No places free' });
+    var sem = !c.semester || c.semester === 'any' || c.semester === m.semester;
+    reasons.push({ ok: sem, text: sem ? 'Runs in ' + semName(m.semester) : 'Runs in ' + semName(m.semester) + '; the partner asked for ' + semName(c.semester) });
+    return { score: (hosts ? 4 : 0) + (left > 0 ? 2 : 0) + (sem ? 1 : 0), reasons: reasons, eligible: hosts && left > 0 };
+  }
+  function nextStep(pr) {
+    var c = chal(pr.challengeId);
+    switch (pr.stage) {
+      case 'matched': return c.tier === 'live' ? 'Send the brief to the partner' : 'Send the brief to the module leader';
+      case 'partner': return 'Waiting for the partner to confirm';
+      case 'module': return 'Waiting for the module leader to approve';
+      case 'approved': return 'Ready to start';
+      case 'live': return 'Running. Close it when the work is handed over';
+      default: return 'Closed';
+    }
+  }
+  function isPublic(pr) {
+    var c = chal(pr.challengeId);
+    return !!c && c.consent && (pr.stage === 'live' || pr.stage === 'closed');
+  }
+  function hashFor(ref) { return ref.toLowerCase(); }
+  function endStop(s) { s = String(s || '').trim(); return /[.?!]$/.test(s) ? s : s + '.'; }
+
+  /* ---------- toast and copy ---------- */
+  var toastTimer = null;
+  function toast(msg) {
+    var el = document.getElementById('toast');
+    if (!el) return;
+    el.textContent = msg;
+    el.hidden = false;
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { el.hidden = true; }, 2600);
+  }
+  function printDoc(sel) {
+    var el = document.querySelector(sel);
+    if (!el) return;
+    el.classList.add('print-me');
+    try { window.print(); } catch (e) { /* ignore */ }
+    setTimeout(function () { el.classList.remove('print-me'); }, 800);
+  }
+  function copyFrom(id) {
+    var ta = document.getElementById(id);
+    if (!ta) return;
+    var fallback = function () {
+      try { ta.focus(); ta.select(); } catch (e) { /* ignore */ }
+      toast('Text selected. Press Ctrl+C or ⌘C to copy.');
+    };
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(ta.value).then(function () { toast('Copied'); }, fallback);
+      } else { fallback(); }
+    } catch (e) { fallback(); }
+  }
+  function copyBlock(id, label, text) {
+    return '<div class="field"><label for="' + id + '">' + esc(label) + '</label>' +
+      '<textarea class="copy" id="' + id + '" readonly>' + esc(text) + '</textarea>' +
+      '<div><button type="button" class="btn sec tiny" data-action="copy" data-target="' + id + '">Copy</button></div></div>';
+  }
+
+  /* ---------- views ---------- */
+  function viewDashboard() {
+    var ideas = state.challenges.filter(function (c) { return !projectFor(c); });
+    var cells = '<a href="#challenges" data-nav="challenges"><span class="n num">' + ideas.length + '</span><span class="l">Ideas waiting</span></a>';
+    STAGES.forEach(function (s) {
+      var n = state.projects.filter(function (p) { return p.stage === s.id; }).length;
+      cells += '<a href="#projects" data-nav="projects" data-stage="' + s.id + '"><span class="n num">' + n + '</span><span class="l">' + esc(s.label) + '</span></a>';
+    });
+
+    var hosting = Object.keys(countBy(state.projects, function (p) { return p.moduleId; })).length;
+    var students = state.projects.filter(function (p) { return p.stage === 'live' || p.stage === 'closed'; }).reduce(function (n, p) { return n + studentsOn(p); }, 0);
+    var onTraj = state.fellows.filter(function (f) { return f.pdr && f.evidence && f.proposal; }).length;
+    var paid = state.partners.filter(function (p) { return !!p.followOn; }).length;
+    var multi = state.partners.filter(function (p) { return partnerStats(p).rung >= 2; }).length;
+    var reqs = pendingRequests().filter(function (r) { return !r.done; });
+
+    var withPartner = state.projects.filter(function (p) { return p.stage === 'partner'; });
+    var withModule = state.projects.filter(function (p) { return p.stage === 'module'; });
+    var attention = [];
+    if (ideas.length) attention.push('<li><a href="#challenges" data-nav="challenges">' + ideas.length + ' ideas</a> are waiting for a module.</li>');
+    withPartner.forEach(function (p) { attention.push('<li><a href="#project-' + hashFor(p.ref) + '" data-nav="project-' + hashFor(p.ref) + '"><span class="ref">' + p.ref + '</span></a> is waiting for the partner to confirm the brief.</li>'); });
+    withModule.forEach(function (p) { attention.push('<li><a href="#project-' + hashFor(p.ref) + '" data-nav="project-' + hashFor(p.ref) + '"><span class="ref">' + p.ref + '</span></a> is waiting for the module leader to approve.</li>'); });
+    if (reqs.length) attention.push('<li><a href="#partners" data-nav="partners">' + reqs.length + ' partner requests</a> need passing on.</li>');
+    if (!attention.length) attention.push('<li>Nothing is waiting.</li>');
+
+    var instCounts = {};
+    Object.keys(INST).forEach(function (k) { instCounts[INST[k].code + ' · ' + INST[k].area] = 0; });
+    state.projects.forEach(function (p) { var m = mod(p.moduleId); if (m) instCounts[INST[m.inst].code + ' · ' + INST[m.inst].area]++; });
+    var tierCounts = { Live: 0, Open: 0, Legacy: 0 };
+    state.challenges.forEach(function (c) { tierCounts[TIERS[c.tier].name]++; });
+    var srcCounts = countBy(state.challenges, function (c) { return c.source; });
+    var platCounts = {};
+    PLATFORMS.forEach(function (p) { platCounts[p] = 0; });
+    state.challenges.forEach(function (c) { if (platCounts[c.platform] != null) platCounts[c.platform]++; });
+
+    return '' +
+      '<div class="head"><h1>Where everything stands</h1>' +
+      '<p class="lede">Each challenge gets a Future Now reference when it is matched to a module. The reference stays with it through the brief, the project page and the student’s record. The demo is set on ' + fmtDate(DEMO_TODAY) + ', part-way through the first year.</p></div>' +
+      '<section class="stack" aria-label="Pipeline"><div class="pipe">' + cells + '</div></section>' +
+      '<section class="figs" aria-label="Measures by portfolio">' +
+        '<section><span class="label">Learning, teaching and student success</span>' +
+          '<div class="fig"><b class="num">' + hosting + '</b><span>modules hosting a challenge<small>of ' + state.modules.length + ' that have said which formats they can host</small></span></div>' +
+          '<div class="fig"><b class="num">' + students + '</b><span>students on live or closed projects<small>counted by cohort; no student names are held</small></span></div></section>' +
+        '<section><span class="label">Research, innovation and knowledge exchange</span>' +
+          '<div class="fig"><b class="num">' + onTraj + '</b><span>staff on an IKE trajectory<small>of ' + state.fellows.length + ' IKE Fellows; the starting point was 0</small></span></div>' +
+          '<div class="fig"><b class="num">' + paid + '</b><span>partners with paid follow-on work<small>a costed proposal or a contract</small></span></div></section>' +
+        '<section><span class="label">Portfolio and partnerships</span>' +
+          '<div class="fig"><b class="num">' + multi + '</b><span>partners engaged in more than one way<small>of ' + state.partners.length + ' partners</small></span></div>' +
+          '<div class="fig"><b class="num">' + reqs.length + '</b><span>partner requests to pass on<small>asked for at the end of a project</small></span></div></section>' +
+      '</section>' +
+      '<section class="cols">' +
+        '<div class="stack"><h2>Needs attention</h2><ul class="plain">' + attention.join('') + '</ul></div>' +
+        '<div class="stack"><h2>A route through the demo</h2><ol class="plain">' +
+          '<li><a href="#formats" data-nav="formats">See the standard formats and tiers</a></li>' +
+          '<li><a href="#modules" data-nav="modules">See which modules host which formats</a></li>' +
+          '<li><a href="#match-c13" data-nav="match-c13">Match a new idea to a module</a></li>' +
+          '<li><a href="#project-fn-28-002" data-nav="project-fn-28-002">Take a brief through approval</a></li>' +
+          '<li><a href="#project-fn-27-004" data-nav="project-fn-27-004">Close a live project</a></li>' +
+          '<li><a href="#page-fn-27-001" data-nav="page-fn-27-001">Open a finished project page</a></li>' +
+          '<li><a href="#record" data-nav="record">Make a student record</a></li>' +
+        '</ol></div>' +
+      '</section>' +
+      '<section class="cols">' +
+        '<div class="stack"><span class="label">Projects by institute</span>' + bars(instCounts, Object.keys(instCounts)) + '</div>' +
+        '<div class="stack"><span class="label">Challenges by tier</span>' + bars(tierCounts, ['Live', 'Open', 'Legacy']) + '</div>' +
+        '<div class="stack"><span class="label">Challenges by source</span>' + bars(srcCounts) + '</div>' +
+        '<div class="stack"><span class="label">Challenges by Impact Platform</span>' + bars(platCounts, PLATFORMS) + '</div>' +
+      '</section>';
+  }
+
+  function viewFormats() {
+    var blocks = FORMATS.map(function (f) {
+      var hosts = state.modules.filter(function (m) { return m.formats.indexOf(f.id) !== -1; }).length;
+      return '<div class="fmt"><h3>' + esc(f.name) + '</h3>' +
+        '<dl><dt>Suits</dt><dd>' + esc(f.levels) + '</dd><dt>Length</dt><dd>' + esc(f.length) + '</dd><dt>Students</dt><dd>' + esc(f.group) + '</dd><dt>They produce</dt><dd>' + esc(f.output) + '</dd></dl>' +
+        '<div><span class="label">The partner commits to</span><ul>' + f.partner.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></div>' +
+        '<p class="small muted">Hosted by ' + hosts + (hosts === 1 ? ' module' : ' modules') + '</p></div>';
+    }).join('');
+    var tiers = Object.keys(TIERS).map(function (k) {
+      return '<div class="fmt"><h3>' + chipTier(k) + '</h3><p>' + esc(TIERS[k].desc) + '</p></div>';
+    }).join('');
+    return '' +
+      '<div class="head"><h1>Formats and tiers</h1>' +
+      '<p class="lede">Seven standard ways to run a challenge. A partner picks a format and a topic. A module leader says once which formats the module can host. That makes matching quick and tells everyone what they are signing up to.</p>' +
+      '<p class="note">This is a menu. Course teams choose which formats suit their module and how to teach and assess them.</p></div>' +
+      '<section class="cols">' + blocks + '</section>' +
+      '<section class="stack"><h2>Three tiers</h2><p class="lede">Not every challenge needs a partner’s time. The tier says how much is needed, so every student can meet a real challenge without a new partner for every module.</p>' +
+      '<div class="cols">' + tiers + '</div></section>';
+  }
+
+  function viewModules() {
+    var rows = state.modules.map(function (m) {
+      var used = projectsOn(m).length;
+      return '<tr><td><strong>' + esc(m.title) + '</strong><span class="ref">' + esc(m.code) + '</span></td>' +
+        '<td class="nowrap">' + esc(INST[m.inst].code) + '<br><span class="small muted">' + esc(m.subject) + '</span></td>' +
+        '<td class="nowrap">Level ' + m.level + '<br><span class="small muted">' + semName(m.semester) + '</span></td>' +
+        '<td class="num">' + m.cohort + '</td>' +
+        '<td>' + m.formats.map(function (f) { return '<span class="chip">' + esc(format(f).name) + '</span>'; }).join(' ') + '</td>' +
+        '<td class="num nowrap">' + used + ' of ' + m.capacity + '</td>' +
+        '<td>' + esc(m.leader) + '</td></tr>';
+    }).join('');
+    var fmtChecks = FORMATS.map(function (f) {
+      return '<label><input type="checkbox" name="mod-format" id="mod-format-' + f.id + '" value="' + f.id + '"> ' + esc(f.name) + '</label>';
+    }).join('');
+    var instOpts = Object.keys(INST).map(function (k) { return '<option value="' + k + '">' + esc(INST[k].code + ' · ' + INST[k].area) + '</option>'; }).join('');
+    return '' +
+      '<div class="head"><h1>Modules</h1>' +
+      '<p class="lede">The demand side. Each module states once a year which formats it can host and how many challenges it has room for. Ideas are matched against this list, so module leaders are only shown briefs that already fit.</p>' +
+      '<p class="note">A module leader does three things: confirms this line once a year, approves a finished brief, and confirms the outcomes at the end.</p></div>' +
+      '<div class="scroll"><table class="tbl"><thead><tr><th>Module</th><th>Institute</th><th>When</th><th>Students</th><th>Formats hosted</th><th>Places used</th><th>Module leader</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
+      '<details class="adder"><summary>Add a module</summary><form id="form-module" novalidate>' +
+        '<div class="grid2">' +
+          '<div class="field"><label for="mod-code">Module code</label><input type="text" id="mod-code" maxlength="12"></div>' +
+          '<div class="field"><label for="mod-title">Module title</label><input type="text" id="mod-title" maxlength="80"></div>' +
+          '<div class="field"><label for="mod-inst">Institute</label><select id="mod-inst">' + instOpts + '</select></div>' +
+          '<div class="field"><label for="mod-subject">Subject area</label><input type="text" id="mod-subject" maxlength="60"></div>' +
+          '<div class="field"><label for="mod-level">Level</label><select id="mod-level"><option>4</option><option>5</option><option>6</option><option>7</option></select></div>' +
+          '<div class="field"><label for="mod-sem">Semester</label><select id="mod-sem"><option value="S1">Semester 1</option><option value="S2">Semester 2</option></select></div>' +
+          '<div class="field"><label for="mod-cohort">Students</label><input type="number" id="mod-cohort" min="1" max="999" value="40"></div>' +
+          '<div class="field"><label for="mod-capacity">Challenges it can host</label><input type="number" id="mod-capacity" min="1" max="20" value="2"></div>' +
+          '<div class="field"><label for="mod-leader">Module leader</label><input type="text" id="mod-leader" maxlength="60"></div>' +
+        '</div>' +
+        '<div class="field"><span>Formats the module can host</span><div class="checks">' + fmtChecks + '</div></div>' +
+        '<p class="form-msg" id="mod-msg" hidden></p>' +
+        '<div><button type="submit" class="btn">Add module</button></div>' +
+      '</form></details>';
+  }
+
+  function viewChallenges() {
+    var rows = state.challenges.map(function (c) {
+      var pr = projectFor(c);
+      var status = pr
+        ? '<a href="#project-' + hashFor(pr.ref) + '" data-nav="project-' + hashFor(pr.ref) + '"><span class="ref">' + pr.ref + '</span></a> ' + chipStage(pr.stage)
+        : '<span class="chip s-idea">Waiting for a module</span> <a class="btn tiny" href="#match-' + c.id + '" data-nav="match-' + c.id + '">Find a module</a>';
+      return '<tr><td><strong>' + esc(c.title) + '</strong><span class="small muted">' + esc(partnerName(c)) + '</span></td>' +
+        '<td>' + chipTier(c.tier) + '</td><td class="nowrap">' + esc(format(c.format).name) + '</td><td class="nowrap">' + esc(c.source) + '</td><td>' + status + '</td></tr>';
+    }).join('');
+    var partnerOpts = '<option value="">No partner (open question)</option>' + state.partners.map(function (p) { return '<option value="' + p.id + '">' + esc(p.name) + '</option>'; }).join('');
+    var fmtOpts = FORMATS.map(function (f) { return '<option value="' + f.id + '">' + esc(f.name) + '</option>'; }).join('');
+    var tierOpts = Object.keys(TIERS).map(function (k) { return '<option value="' + k + '">' + esc(TIERS[k].name) + '</option>'; }).join('');
+    var srcOpts = SOURCES.map(function (s) { return '<option>' + esc(s) + '</option>'; }).join('');
+    var platOpts = PLATFORMS.map(function (p) { return '<option>' + esc(p) + '</option>'; }).join('');
+    return '' +
+      '<div class="head"><h1>Challenges</h1>' +
+      '<p class="lede">Ideas come from partners, alumni, researchers, staff contacts, the central Applied Projects team, published research questions and past briefs. Each answers the same three questions and names a format.</p></div>' +
+      '<details class="adder"><summary>Add a challenge</summary><form id="form-challenge" novalidate>' +
+        '<div class="field"><label for="ch-title">Title</label><input type="text" id="ch-title" maxlength="110"></div>' +
+        '<div class="grid2">' +
+          '<div class="field"><label for="ch-partner">Partner</label><select id="ch-partner">' + partnerOpts + '</select></div>' +
+          '<div class="field"><label for="ch-newpartner">Or a new organisation</label><input type="text" id="ch-newpartner" maxlength="80"></div>' +
+        '</div>' +
+        '<div class="field"><label for="ch-issue">What’s the issue to explore?</label><textarea id="ch-issue" maxlength="600"></textarea></div>' +
+        '<div class="field"><label for="ch-background">What’s the background?</label><textarea id="ch-background" maxlength="600"></textarea></div>' +
+        '<div class="field"><label for="ch-outcome">What’s the ideal outcome?</label><textarea id="ch-outcome" maxlength="600"></textarea></div>' +
+        '<div class="grid2">' +
+          '<div class="field"><label for="ch-format">Format</label><select id="ch-format">' + fmtOpts + '</select></div>' +
+          '<div class="field"><label for="ch-tier">Tier</label><select id="ch-tier">' + tierOpts + '</select></div>' +
+          '<div class="field"><label for="ch-source">Where it came from</label><select id="ch-source">' + srcOpts + '</select></div>' +
+          '<div class="field"><label for="ch-platform">Impact Platform</label><select id="ch-platform">' + platOpts + '</select></div>' +
+          '<div class="field"><label for="ch-sem">Preferred timing</label><select id="ch-sem"><option value="any">Either semester</option><option value="S1">Semester 1</option><option value="S2">Semester 2</option></select></div>' +
+        '</div>' +
+        '<div class="checks"><label><input type="checkbox" id="ch-consent" checked> The partner agrees to a public project page</label></div>' +
+        '<p class="form-msg" id="ch-msg" hidden></p>' +
+        '<div><button type="submit" class="btn">Add challenge</button></div>' +
+      '</form></details>' +
+      '<div class="scroll"><table class="tbl"><thead><tr><th>Challenge</th><th>Tier</th><th>Format</th><th>Source</th><th>Status</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+  }
+
+  function viewMatch(id) {
+    var c = chal(id);
+    if (!c) return notFound('That challenge is not in the demo.', 'challenges', 'Back to challenges');
+    var existing = projectFor(c);
+    var f = format(c.format);
+    var list = state.modules.map(function (m) { return { m: m, fit: fit(c, m) }; })
+      .sort(function (a, b) { return b.fit.score - a.fit.score; });
+    var rows = list.map(function (x) {
+      var m = x.m;
+      var reasons = x.fit.reasons.map(function (r) { return '<li>' + (r.ok ? '✓ ' : '✗ ') + esc(r.text) + '</li>'; }).join('');
+      var btn = existing ? '' : '<button type="button" class="btn tiny" data-action="create-project" data-ch="' + c.id + '" data-mod="' + m.id + '"' + (x.fit.eligible ? '' : ' disabled') + '>Match to this module</button>';
+      return '<tr><td><strong>' + esc(m.title) + '</strong><span class="ref">' + esc(m.code) + '</span> <span class="small muted">' + esc(INST[m.inst].code) + ', Level ' + m.level + ', ' + esc(m.leader) + '</span></td>' +
+        '<td><ul class="plain small" style="list-style:none;padding-left:0">' + reasons + '</ul></td><td class="nowrap">' + btn + '</td></tr>';
+    }).join('');
+    return '' +
+      '<div class="head"><p><a href="#challenges" data-nav="challenges">← Challenges</a></p><h1>' + esc(c.title) + '</h1>' +
+      '<div class="row">' + chipTier(c.tier, true) + '<span class="chip">' + esc(f.name) + '</span><span class="chip">' + esc(c.source) + '</span><span class="muted">' + esc(partnerName(c)) + '</span></div></div>' +
+      '<section class="panel stack">' +
+        '<div><span class="label">The issue</span><p>' + esc(c.issue) + '</p></div>' +
+        '<div><span class="label">Background</span><p>' + esc(c.background) + '</p></div>' +
+        '<div><span class="label">Ideal outcome</span><p>' + esc(c.outcome) + '</p></div>' +
+      '</section>' +
+      (existing ? '<p class="note">Already matched: <a href="#project-' + hashFor(existing.ref) + '" data-nav="project-' + hashFor(existing.ref) + '"><span class="ref">' + existing.ref + '</span></a></p>' : '') +
+      '<section class="stack"><h2>Modules that could host it</h2><p class="lede">Ranked on format, free places and timing. Whether the subject suits the challenge is the Future Now lead’s call. Matching creates the Future Now reference and drafts the brief from the format and the three answers above.</p>' +
+      '<div class="scroll"><table class="tbl"><thead><tr><th>Module</th><th>Fit</th><th></th></tr></thead><tbody>' + rows + '</tbody></table></div></section>';
+  }
+
+  function viewProjects() {
+    var list = state.projects.filter(function (p) { return ui.stage === 'all' || p.stage === ui.stage; });
+    var rows = list.map(function (p) {
+      var c = chal(p.challengeId), m = mod(p.moduleId);
+      return '<tr><td><a href="#project-' + hashFor(p.ref) + '" data-nav="project-' + hashFor(p.ref) + '"><span class="ref">' + p.ref + '</span></a></td>' +
+        '<td><strong>' + esc(c.title) + '</strong><span class="small muted">' + esc(partnerName(c)) + '</span></td>' +
+        '<td>' + esc(m.title) + '<br><span class="small muted">' + esc(INST[m.inst].code) + ', ' + esc(p.period) + '</span></td>' +
+        '<td>' + chipStage(p.stage) + '</td><td>' + esc(nextStep(p)) + '</td></tr>';
+    }).join('');
+    var opts = '<option value="all">All stages</option>' + STAGES.map(function (s) { return '<option value="' + s.id + '"' + (ui.stage === s.id ? ' selected' : '') + '>' + esc(s.label) + '</option>'; }).join('');
+    return '' +
+      '<div class="head"><h1>Projects</h1><p class="lede">A challenge becomes a project when it is matched to a module. From then on it carries one reference.</p></div>' +
+      '<div class="field" style="max-width:260px"><label for="pf-stage">Show</label><select id="pf-stage">' + opts + '</select></div>' +
+      (rows ? '<div class="scroll"><table class="tbl"><thead><tr><th>Reference</th><th>Challenge</th><th>Module</th><th>Stage</th><th>Next step</th></tr></thead><tbody>' + rows + '</tbody></table></div>' : '<p class="note">No projects at this stage.</p>');
+  }
+
+  function briefHTML(pr) {
+    var c = chal(pr.challengeId), m = mod(pr.moduleId), f = format(c.format), t = theme(c.themeId);
+    var who = c.tier === 'live'
+      ? '<p>' + esc(partnerName(c)) + ' (' + esc((partner(c.partnerId) || {}).sector || '') + ') has set this challenge and will work with you on it.</p>'
+      : c.tier === 'open'
+        ? '<p>This is a published research question. No partner takes part. Your best work can be sent to the body that asked it.</p>'
+        : '<p>This brief was first set by ' + esc(partnerName(c)) + ' and is reused with their consent. They are not taking part this time.</p>';
+    return '<article class="doc" id="brief-doc">' +
+      '<div class="doc-band"><div><span class="kicker">Future Now</span><strong>Challenge brief</strong></div><span class="ref">' + pr.ref + '</span></div>' +
+      '<div class="doc-body">' +
+        '<h2>' + esc(c.title) + '</h2>' +
+        '<div class="facts">' +
+          '<div><span class="label">Format</span><span>' + esc(f.name) + '</span></div>' +
+          '<div><span class="label">Tier</span><span>' + esc(TIERS[c.tier].name) + '</span></div>' +
+          '<div><span class="label">Module</span><span>' + esc(m.title) + ', Level ' + m.level + '</span></div>' +
+          '<div><span class="label">When</span><span>' + esc(pr.period) + '</span></div>' +
+          '<div><span class="label">Impact Platform</span><span>' + esc(c.platform) + '</span></div>' +
+          (t ? '<div><span class="label">Theme</span><span>' + esc(t.title) + '</span></div>' : '') +
+        '</div>' +
+        '<section><h3>Who you are working with</h3>' + who + '</section>' +
+        '<section><h3>The challenge</h3><p>' + esc(c.issue) + '</p></section>' +
+        '<section><h3>Background</h3><p>' + esc(c.background) + '</p></section>' +
+        '<section><h3>What a good outcome looks like</h3><p>' + esc(c.outcome) + '</p></section>' +
+        '<section><h3>What you will produce</h3><p>' + esc(f.output) + '. You will work as: ' + esc(f.group.toLowerCase()) + '. Length: ' + esc(f.length) + '.</p></section>' +
+        '<section><h3>What the partner will do</h3><ul class="plain">' + f.partner.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></section>' +
+        '<section><h3>At the end</h3><p>The project gets a public page under this reference, and you can make a project record for your CV and LinkedIn.</p></section>' +
+        '<p class="stamp">Prototype · sample data</p>' +
+      '</div></article>';
+  }
+
+  function emailFor(pr) {
+    var c = chal(pr.challengeId), m = mod(pr.moduleId), f = format(c.format), p = partner(c.partnerId);
+    var lead = LEADS[m.inst];
+    if (pr.stage === 'matched' && c.tier === 'live') {
+      return { to: p ? p.contact : '', subject: 'Your Future Now challenge ' + pr.ref + ': please check the brief',
+        body: 'Dear ' + firstName(p ? p.contact : '') + ',\n\nThank you for setting a challenge for our students. We have matched it to ' + m.title + ' (Level ' + m.level + '), led by ' + m.leader + ', for ' + pr.period + '.\n\nThe brief is attached. Please reply to confirm it, or tell us what to change.\n\nIt will run as a ' + f.name.toLowerCase() + '. We would ask you for:\n- ' + f.partner.join('\n- ') + '\n\nBest wishes,\n' + lead + '\nFuture Now lead' };
+    }
+    if (pr.stage === 'matched' || pr.stage === 'partner') {
+      return { to: m.leader, subject: 'Future Now brief ' + pr.ref + ' is ready for your approval',
+        body: 'Dear ' + m.leader + ',\n\n' + (c.tier === 'live' ? partnerName(c) + ' has confirmed the attached brief' : 'The attached brief needs no partner time') + ': “' + c.title + '”. It uses the ' + f.name.toLowerCase() + ' format, which you told us ' + m.code + ' can host.\n\nPlease approve it or ask for changes. This is the second of your three touchpoints. At the end we will ask you to confirm the outcomes.\n\nBest wishes,\n' + lead + '\nFuture Now lead' };
+    }
+    if (pr.stage === 'approved') {
+      return { to: (p && c.tier === 'live' ? contactName(p.contact) + ' and ' : '') + m.leader, subject: 'Future Now ' + pr.ref + ' is approved and ready to start',
+        body: 'Dear ' + (p && c.tier === 'live' ? firstName(p.contact) + ' and ' : '') + m.leader + ',\n\nThe brief for “' + c.title + '” is approved. It runs in ' + pr.period + ' as a ' + f.name.toLowerCase() + '.\n\n' + (c.tier === 'live' ? 'First step: ' + f.partner[0].charAt(0).toLowerCase() + f.partner[0].slice(1) + '. Please agree a date between you.\n\n' : '') + 'Every document for this project carries the reference ' + pr.ref + '.\n\nBest wishes,\n' + lead + '\nFuture Now lead' };
+    }
+    return null;
+  }
+
+  function stepper(pr) {
+    var c = chal(pr.challengeId);
+    var idx = stageIndex(pr.stage);
+    return '<div class="pipe" role="list">' + STAGES.map(function (s, i) {
+      var cls = i < idx ? 'done' : i === idx ? 'now' : 'todo';
+      var d = '';
+      if (s.id === 'partner' && c.tier !== 'live') { cls = 'skip' + (i > idx ? ' todo' : ''); d = 'Not needed'; }
+      else if (i === idx) d = 'Now';
+      return '<div class="step ' + cls + '" role="listitem"><span class="l">' + esc(s.label) + '</span><span class="d">' + d + '</span></div>';
+    }).join('') + '</div>';
+  }
+
+  function actionPanel(pr) {
+    var c = chal(pr.challengeId), m = mod(pr.moduleId), p = partner(c.partnerId);
+    var e = emailFor(pr);
+    var emailBlock = e ? '<p class="small muted">To: ' + esc(e.to) + '</p>' + copyBlock('email-text', 'Email, ready to copy', 'Subject: ' + e.subject + '\n\n' + e.body) : '';
+    var noAuto = '<p class="small muted">Nothing is sent automatically. Copy the email, send it yourself, then record the step here.</p>';
+    if (pr.stage === 'matched') {
+      return '<h2>Next step</h2><p>' + esc(nextStep(pr)) + '.</p>' + emailBlock + noAuto +
+        '<div><button type="button" class="btn" data-action="advance" data-ref="' + pr.ref + '">' + (c.tier === 'live' ? 'Record: sent to partner' : 'Record: sent to module leader') + '</button></div>';
+    }
+    if (pr.stage === 'partner') {
+      return '<h2>Next step</h2><p>Waiting for ' + esc(p ? contactName(p.contact) : 'the partner') + ' to confirm. When they do, send the brief to the module leader.</p>' + emailBlock + noAuto +
+        '<div><button type="button" class="btn" data-action="advance" data-ref="' + pr.ref + '">Record: partner confirmed</button></div>';
+    }
+    if (pr.stage === 'module') {
+      return '<h2>Next step</h2><p>Waiting for ' + esc(m.leader) + ' to approve. This is the module leader’s second touchpoint of three.</p>' +
+        '<div class="row"><button type="button" class="btn" data-action="advance" data-ref="' + pr.ref + '">Record: approved</button>' +
+        '<button type="button" class="btn sec" data-action="changes" data-ref="' + pr.ref + '">Changes requested</button></div>';
+    }
+    if (pr.stage === 'approved') {
+      return '<h2>Next step</h2><p>Ready to start in ' + esc(pr.period) + '.</p>' + emailBlock + noAuto +
+        '<div><button type="button" class="btn" data-action="advance" data-ref="' + pr.ref + '">Record: project started</button></div>';
+    }
+    if (pr.stage === 'live') {
+      var ints = INTERESTS.map(function (i) {
+        return '<label><input type="checkbox" name="co-int" id="co-int-' + i.id + '" value="' + i.id + '"> ' + esc(i.label) + '</label>';
+      }).join('');
+      return '<h2>Close the project</h2><p class="small muted">In the working system the partner answers the feedback questions on a short form and the module leader confirms the outcomes. Fill them in here to see what happens next.</p>' +
+        '<form id="form-close" data-ref="' + pr.ref + '" class="stack" novalidate>' +
+          '<div class="field"><label for="co-students">Students who took part</label><input type="number" id="co-students" min="1" max="999" value="' + studentsOn(pr) + '"></div>' +
+          '<div class="field"><label for="co-outputs">What the students produced</label><textarea id="co-outputs" maxlength="400"></textarea></div>' +
+          '<div class="field"><label for="co-summary">Insight summary for the partner</label><textarea id="co-summary" maxlength="700"></textarea></div>' +
+          '<div class="field"><label for="co-rating">Partner’s rating</label><select id="co-rating"><option value="5">5, very useful</option><option value="4">4, useful</option><option value="3">3, some use</option><option value="2">2, little use</option><option value="1">1, not useful</option></select></div>' +
+          '<div class="field"><label for="co-quote">Partner’s comment</label><textarea id="co-quote" maxlength="400"></textarea></div>' +
+          '<div class="checks"><label><input type="checkbox" id="co-consent" checked> The partner agrees to the comment being shown</label></div>' +
+          '<div class="field"><span>Would the partner be interested in…</span><div class="checks">' + ints + '</div></div>' +
+          '<p class="form-msg" id="co-msg" hidden></p>' +
+          '<div class="row"><button type="submit" class="btn">Close project</button><button type="button" class="btn sec" data-action="co-sample">Fill with sample answers</button></div>' +
+        '</form>';
+    }
+    var co = pr.closeout;
+    var asked = co.interests.length ? '<ul class="plain">' + co.interests.map(function (i) { var it = interest(i); return '<li>' + esc(it.label) + ' <span class="muted small">→ ' + esc(it.route) + '</span></li>'; }).join('') + '</ul>' : '<p class="muted">Nothing further for now.</p>';
+    return '<h2>Closed</h2>' +
+      '<p><strong class="num">' + co.students + '</strong> students took part. The partner rated it <strong class="num">' + co.rating + ' out of 5</strong>.</p>' +
+      '<div><span class="label">The partner asked about</span>' + asked + '</div>' +
+      '<div class="row">' + (isPublic(pr) ? '<a class="btn" href="#page-' + hashFor(pr.ref) + '" data-nav="page-' + hashFor(pr.ref) + '">Open the project page</a>' : '') +
+      '<a class="btn sec" href="#partners" data-nav="partners">Pass on requests</a></div>';
+  }
+
+  function viewProject(ref) {
+    var pr = proj(ref);
+    if (!pr) return notFound('That project is not in the demo.', 'projects', 'Back to projects');
+    var c = chal(pr.challengeId), m = mod(pr.moduleId);
+    var log = pr.log.map(function (l) { return '<li><time>' + fmtDate(l.date) + '</time>' + esc(l.text) + '</li>'; }).join('');
+    return '' +
+      '<div class="head"><p><a href="#projects" data-nav="projects">← Projects</a></p>' +
+      '<div class="head-row"><h1>' + esc(c.title) + '</h1><span class="ref">' + pr.ref + '</span></div>' +
+      '<div class="row">' + chipStage(pr.stage) + chipTier(c.tier, true) + '<span class="chip">' + esc(format(c.format).name) + '</span>' +
+      '<span class="muted">' + esc(partnerName(c)) + ' · ' + esc(m.title) + ' (' + esc(INST[m.inst].code) + ') · lead: ' + esc(LEADS[m.inst]) + '</span></div></div>' +
+      stepper(pr) +
+      '<div class="split"><div class="stack">' + briefHTML(pr) +
+        (STANDALONE ? '<div><button type="button" class="btn sec" data-action="print" data-target="#brief-doc">Print or save the brief as PDF</button></div>' : '') + '</div>' +
+        '<aside class="stack"><div class="panel stack">' + actionPanel(pr) + '</div>' +
+        '<div class="stack"><span class="label">History</span><ul class="log">' + log + '</ul></div></aside>' +
+      '</div>';
+  }
+
+  function viewPage(ref) {
+    var pr = proj(ref);
+    if (!pr || !isPublic(pr)) return notFound('There is no public page for that reference yet. A page appears once a project is live and the partner has agreed.', 'showcase', 'Back to the showcase');
+    var c = chal(pr.challengeId), m = mod(pr.moduleId), f = format(c.format), t = theme(c.themeId), co = pr.closeout;
+    var body = '';
+    if (co) {
+      body += '<section><h3>What the students produced</h3><p>' + esc(co.outputs) + '</p></section>' +
+        '<section><h3>What they found</h3><p>' + esc(co.summary) + '</p></section>';
+      if (co.quote && co.quoteConsent) body += '<blockquote>“' + esc(co.quote) + '”<footer>' + esc(partnerName(c)) + '</footer></blockquote>';
+    } else {
+      body += '<section><h3>In progress</h3><p>Students are working on this challenge now. Their outputs and the partner’s feedback will appear here when it closes.</p></section>';
+    }
+    return '' +
+      '<div class="head"><p><a href="#showcase" data-nav="showcase">← Showcase</a></p>' +
+      '<p class="lede">This is the public page a student links to. It proves the project happened and names no students.</p></div>' +
+      '<article class="doc">' +
+        '<div class="doc-band"><div><span class="kicker">Future Now</span><strong>Project page</strong></div><span class="ref">' + pr.ref + '</span></div>' +
+        '<div class="doc-body">' +
+          '<h2>' + esc(c.title) + '</h2>' +
+          '<div class="facts">' +
+            '<div><span class="label">Partner</span><span>' + esc(partnerName(c)) + '</span></div>' +
+            '<div><span class="label">Format</span><span>' + esc(f.name) + '</span></div>' +
+            '<div><span class="label">Module</span><span>' + esc(m.title) + ', Level ' + m.level + '</span></div>' +
+            '<div><span class="label">When</span><span>' + esc(pr.period) + '</span></div>' +
+            '<div><span class="label">Students</span><span class="num">' + studentsOn(pr) + '</span></div>' +
+            '<div><span class="label">Impact Platform</span><span>' + esc(c.platform) + '</span></div>' +
+            (t ? '<div><span class="label">Theme</span><span>' + esc(t.title) + '</span></div>' : '') +
+          '</div>' +
+          '<section><h3>The challenge</h3><p>' + esc(c.issue) + '</p></section>' + body +
+          '<div class="row"><button type="button" class="btn" data-action="make-record" data-ref="' + pr.ref + '">I took part: make my record</button></div>' +
+          '<p class="small muted">Page address: futurenow.example/' + hashFor(pr.ref) + '</p>' +
+          '<p class="stamp">Prototype · sample data</p>' +
+        '</div></article>';
+  }
+
+  function viewShowcase() {
+    var visible = state.projects.filter(isPublic).filter(function (p) {
+      var m = mod(p.moduleId), c = chal(p.challengeId);
+      return (ui.scInst === 'all' || m.inst === ui.scInst) && (ui.scPlat === 'all' || c.platform === ui.scPlat);
+    });
+    function card(p) {
+      var c = chal(p.challengeId), m = mod(p.moduleId);
+      return '<a class="card" href="#page-' + hashFor(p.ref) + '" data-nav="page-' + hashFor(p.ref) + '">' +
+        '<span class="row"><span class="ref">' + p.ref + '</span>' + chipStage(p.stage) + '</span>' +
+        '<h3>' + esc(c.title) + '</h3>' +
+        '<span class="meta">' + esc(partnerName(c)) + '</span>' +
+        '<span class="meta">' + esc(format(c.format).name) + ' · ' + esc(m.subject) + ' (' + esc(INST[m.inst].code) + ')</span></a>';
+    }
+    var groups = '';
+    THEMES.forEach(function (t) {
+      var ps = visible.filter(function (p) { return chal(p.challengeId).themeId === t.id; });
+      if (!ps.length) return;
+      var insts = Object.keys(countBy(ps, function (p) { return INST[mod(p.moduleId).inst].code; }));
+      var anchor = partner(t.anchor);
+      groups += '<section class="theme"><div class="head-row"><h2>' + esc(t.title) + '</h2><span class="muted">' + esc(t.platform) + (anchor ? ' · anchor partner: ' + esc(anchor.name) : '') + '</span></div>' +
+        '<p class="small muted">' + ps.length + (ps.length === 1 ? ' project' : ' projects') + ' from ' + insts.length + (insts.length === 1 ? ' institute' : ' institutes') + ': ' + esc(insts.join(', ')) + '</p>' +
+        '<div class="cards">' + ps.map(card).join('') + '</div></section>';
+    });
+    var rest = visible.filter(function (p) { return !chal(p.challengeId).themeId; });
+    if (rest.length) groups += '<section class="theme"><h2>More projects</h2><div class="cards">' + rest.map(card).join('') + '</div></section>';
+    if (!groups) groups = '<p class="note">No projects match those filters.</p>';
+    var sponsors = [];
+    pendingRequests().forEach(function (r) { if (r.interest.id === 'prize' && sponsors.indexOf(r.partner) === -1) sponsors.push(r.partner); });
+    var instOpts = '<option value="all">All institutes</option>' + Object.keys(INST).map(function (k) { return '<option value="' + k + '"' + (ui.scInst === k ? ' selected' : '') + '>' + esc(INST[k].code + ' · ' + INST[k].area) + '</option>'; }).join('');
+    var platOpts = '<option value="all">All Impact Platforms</option>' + PLATFORMS.map(function (p) { return '<option' + (ui.scPlat === p ? ' selected' : '') + '>' + esc(p) + '</option>'; }).join('');
+    return '' +
+      '<div class="head"><h1>Showcase</h1>' +
+      '<p class="lede">One showcase for the whole College. Projects are grouped by theme, so work from different institutes on the same challenge sits side by side. The same list is the programme for the showcase day: one stand for each project.</p>' +
+      (sponsors.length ? '<p class="note">Interested in sponsoring a prize: ' + esc(sponsors.join(', ')) + '.</p>' : '') + '</div>' +
+      '<div class="grid2" style="max-width:560px">' +
+        '<div class="field"><label for="sc-inst">Institute</label><select id="sc-inst">' + instOpts + '</select></div>' +
+        '<div class="field"><label for="sc-plat">Impact Platform</label><select id="sc-plat">' + platOpts + '</select></div>' +
+      '</div>' + groups;
+  }
+
+  function recordTexts() {
+    var pr = proj(rec.ref);
+    if (!pr) return null;
+    var c = chal(pr.challengeId), m = mod(pr.moduleId), f = format(c.format);
+    var contrib = rec.contribution.trim();
+    var url = 'futurenow.example/' + hashFor(pr.ref);
+    var produced = pr.closeout ? pr.closeout.outputs : f.output + '.';
+    var cv = 'Future Now Challenge with ' + partnerName(c) + ' (' + pr.period + '): ' + endStop(c.title) + ' ' +
+      f.name + ' completed as part of ' + m.title + ', Level ' + m.level + '.' + (contrib ? ' ' + endStop(contrib) : '') + ' Reference ' + pr.ref + '.';
+    var li = ['Project name: Future Now Challenge: ' + c.title,
+      'Associated with: Sheffield Hallam University (choose your course)',
+      'Dates: ' + pr.period,
+      'Description: ' + f.name + ' for ' + partnerName(c) + ', completed as part of ' + m.title + ' (Level ' + m.level + '). ' + produced + (contrib ? ' My contribution: ' + contrib : ''),
+      rec.skills.length ? 'Skills: ' + rec.skills.join(', ') : '',
+      'Link: https://' + url].filter(Boolean).join('\n');
+    return { pr: pr, c: c, m: m, f: f, contrib: contrib, url: url, cv: cv, li: li };
+  }
+
+  function recordCard() {
+    var t = recordTexts();
+    if (!t) return '';
+    var co = t.pr.closeout;
+    return '<article class="doc" id="rec-card">' +
+      '<div class="doc-band"><div><span class="kicker">Future Now</span><strong>Project record</strong></div><span class="ref">' + t.pr.ref + '</span></div>' +
+      '<div class="doc-body">' +
+        '<div><p class="record-name" id="rec-prev-name">' + esc(rec.name.trim() || 'Your name') + '</p><p class="muted">took part in</p></div>' +
+        '<h2>' + esc(t.c.title) + '</h2>' +
+        '<div class="facts">' +
+          '<div><span class="label">Partner</span><span>' + esc(partnerName(t.c)) + '</span></div>' +
+          '<div><span class="label">Format</span><span>' + esc(t.f.name) + '</span></div>' +
+          '<div><span class="label">Module</span><span>' + esc(t.m.title) + ', Level ' + t.m.level + '</span></div>' +
+          '<div><span class="label">When</span><span>' + esc(t.pr.period) + '</span></div>' +
+        '</div>' +
+        '<section><h3>My contribution</h3><p id="rec-prev-contrib">' + esc(t.contrib || 'Describe what you did in a sentence or two.') + '</p></section>' +
+        (rec.skills.length ? '<section><h3>Skills</h3><p>' + esc(rec.skills.join(', ')) + '</p></section>' : '') +
+        (co && co.quote && co.quoteConsent ? '<blockquote>“' + esc(co.quote) + '”<footer>' + esc(partnerName(t.c)) + '</footer></blockquote>' : '') +
+        '<p class="small muted">Project page: ' + esc(t.url) + '</p>' +
+        '<p class="stamp">Prototype · sample data</p>' +
+      '</div></article>';
+  }
+
+  function viewRecord() {
+    var options = state.projects.filter(isPublic);
+    if (!proj(rec.ref) || !isPublic(proj(rec.ref))) rec.ref = options.length ? options[0].ref : '';
+    if (!options.length) return '<div class="head"><h1>Student record</h1><p class="note">No projects have a public page yet.</p></div>';
+    var t = recordTexts();
+    var opts = options.map(function (p) { return '<option value="' + p.ref + '"' + (p.ref === rec.ref ? ' selected' : '') + '>' + p.ref + ' · ' + esc(chal(p.challengeId).title) + '</option>'; }).join('');
+    var skills = SKILLS.map(function (s, i) {
+      return '<button type="button" class="skill" id="skill-' + i + '" data-action="skill" data-skill="' + esc(s) + '" aria-pressed="' + (rec.skills.indexOf(s) !== -1) + '">' + esc(s) + '</button>';
+    }).join('');
+    return '' +
+      '<div class="head"><h1>Student record</h1>' +
+      '<p class="lede">The student’s end of the thread. They pick their project, add their name and what they did, and take away a record, a CV line and wording for the Projects section of LinkedIn.</p>' +
+      '<p class="note">Your name and words stay on this screen. They are not saved or sent anywhere, so the hub holds no student data.</p></div>' +
+      '<div class="split">' +
+        '<div class="stack">' +
+          '<div class="field"><label for="rec-project">Project</label><select id="rec-project">' + opts + '</select></div>' +
+          '<div class="field"><label for="rec-name">Your name</label><input type="text" id="rec-name" maxlength="60" autocomplete="off" value="' + esc(rec.name) + '"></div>' +
+          '<div class="field"><label for="rec-contribution">What you did</label><textarea id="rec-contribution" maxlength="280">' + esc(rec.contribution) + '</textarea><small>One or two sentences. Say what you did and what came of it.</small></div>' +
+          '<div class="field"><span>Skills you used (up to four)</span><div class="skills">' + skills + '</div></div>' +
+          '<div id="rec-copy" class="stack">' + copyBlock('rec-cv', 'For your CV', t.cv) + copyBlock('rec-li', 'For LinkedIn, under Projects', t.li) + '</div>' +
+        '</div>' +
+        '<div class="stack">' +
+          '<div id="rec-card-box">' + recordCard() + '</div>' +
+          '<div class="row"><button type="button" class="btn" data-action="rec-image">Make an image of the record</button>' +
+            (STANDALONE ? '<button type="button" class="btn sec" data-action="print" data-target="#rec-card">Print or save as PDF</button>' : '') + '</div>' +
+          '<div id="rec-image-box" class="stack" hidden><p class="small muted" id="rec-image-help">Press and hold the image, or right-click it, to save it.</p><img id="rec-image" alt="Project record image"></div>' +
+        '</div>' +
+      '</div>';
+  }
+
+  function viewPartners() {
+    var reqs = pendingRequests();
+    var open = reqs.filter(function (r) { return !r.done; });
+    var reqRows = open.map(function (r) {
+      return '<tr><td>' + esc(r.partner) + '<br><span class="ref">' + r.ref + '</span></td><td>' + esc(r.interest.label) + '</td><td>Pass to ' + esc(r.interest.route) + '</td>' +
+        '<td class="nowrap"><button type="button" class="btn tiny sec" data-action="route" data-key="' + esc(r.key) + '">Record: passed on</button></td></tr>';
+    }).join('');
+    var list = state.partners.map(function (p) { return { p: p, s: partnerStats(p) }; })
+      .filter(function (x) { return !ui.partnersReady || (x.s.rung < 3 && reqs.some(function (r) { return r.partnerId === x.p.id; })); })
+      .sort(function (a, b) { return b.s.rung - a.s.rung; });
+    var rows = list.map(function (x) {
+      var p = x.p, s = x.s;
+      var asked = [];
+      reqs.filter(function (r) { return r.partnerId === p.id; }).forEach(function (r) {
+        var hit = asked.filter(function (a) { return a.id === r.interest.id; })[0];
+        if (hit) hit.done = hit.done && r.done;
+        else asked.push({ id: r.interest.id, label: r.interest.label, done: r.done });
+      });
+      var askedHtml = asked.length ? asked.map(function (a) { return esc(a.label) + (a.done ? ' <span class="small muted">(passed on)</span>' : ''); }).join('<br>') : '<span class="muted">—</span>';
+      var follow = p.followOn ? '<strong>' + esc(p.followOn.type) + '</strong><span class="small muted">£' + p.followOn.value.toLocaleString('en-GB') + ' · ' + esc(p.followOn.status) + ' · ' + esc(p.followOn.staff) + '</span>' : '<span class="muted">—</span>';
+      return '<tr><td><strong>' + esc(p.name) + '</strong><span class="small muted">' + esc(p.sector) + ' · came through: ' + esc(p.source) + '</span></td>' +
+        '<td class="nowrap">' + rungMeter(s.rung) + esc(RUNGS[s.rung]) + '</td>' +
+        '<td>' + (s.types.length ? esc(s.types.join(', ')) : '<span class="muted">Idea submitted</span>') + '</td>' +
+        '<td>' + askedHtml + '</td><td>' + follow + '</td></tr>';
+    }).join('');
+    return '' +
+      '<div class="head"><h1>Partners</h1>' +
+      '<p class="lede">A student challenge is free and stays free. At the end of each project the partner is asked what else they might want. Those answers show who is ready for something more, up to paid work led by staff.</p></div>' +
+      '<section class="stack"><h2>Requests to pass on</h2>' +
+        (open.length ? '<div class="scroll"><table class="tbl"><thead><tr><th>Partner</th><th>Asked about</th><th>Who should hear</th><th></th></tr></thead><tbody>' + reqRows + '</tbody></table></div>' : '<p class="note">Every request has been passed on.</p>') +
+      '</section>' +
+      '<section class="stack"><div class="head-row"><h2>All partners</h2>' +
+        '<label class="checks"><span><input type="checkbox" id="pt-ready"' + (ui.partnersReady ? ' checked' : '') + '> Only those ready to move up</span></label></div>' +
+        (rows ? '<div class="scroll"><table class="tbl"><thead><tr><th>Partner</th><th>Stage of the relationship</th><th>Engagement so far</th><th>Asked about next</th><th>Paid follow-on</th></tr></thead><tbody>' + rows + '</tbody></table></div>' : '<p class="note">No partners match.</p>') +
+      '</section>';
+  }
+
+  function staffNames() {
+    var names = [];
+    function add(n) { if (n && names.indexOf(n) === -1) names.push(n); }
+    state.modules.forEach(function (m) { add(m.leader); });
+    Object.keys(LEADS).forEach(function (k) { add(LEADS[k]); });
+    state.challenges.forEach(function (c) { add(c.researcher); });
+    return names.sort();
+  }
+  function staffRecord(name) {
+    var rows = [];
+    state.projects.forEach(function (pr) {
+      var c = chal(pr.challengeId), m = mod(pr.moduleId);
+      var roles = [];
+      if (m.leader === name) roles.push('Module leader');
+      if (LEADS[m.inst] === name) roles.push('Future Now lead');
+      if (c.researcher === name) roles.push('Research lead');
+      if (roles.length) rows.push({ pr: pr, c: c, m: m, roles: roles });
+    });
+    return rows;
+  }
+  function viewStaff() {
+    var names = staffNames();
+    if (names.indexOf(ui.staff) === -1) ui.staff = names[0] || '';
+    var onTraj = state.fellows.filter(function (f) { return f.pdr && f.evidence && f.proposal; }).length;
+    var fRows = state.fellows.map(function (f) {
+      function box(key, label) {
+        return '<label class="checks"><span><input type="checkbox" id="fel-' + f.id + '-' + key + '" data-fellow="' + f.id + '" data-key="' + key + '"' + (f[key] ? ' checked' : '') + '> <span class="small">' + label + '</span></span></label>';
+      }
+      var on = f.pdr && f.evidence && f.proposal;
+      return '<tr><td><strong>' + esc(f.name) + '</strong><span class="small muted">' + esc(f.area) + ' · ' + esc(INST[f.inst].code) + '</span></td>' +
+        '<td>' + box('pdr', 'In PDR') + '</td><td>' + box('evidence', 'Record kept') + '</td><td>' + box('proposal', 'Proposal sent') + '</td>' +
+        '<td>' + (on ? '<span class="chip s-live">On a trajectory</span>' : '<span class="chip">Not yet</span>') + '<br><span class="small muted">' + esc(f.note) + '</span></td></tr>';
+    }).join('');
+    var recRows = staffRecord(ui.staff);
+    var partners = [], students = 0;
+    recRows.forEach(function (r) { var n = partnerName(r.c); if (partners.indexOf(n) === -1) partners.push(n); if (r.pr.stage === 'live' || r.pr.stage === 'closed') students += studentsOn(r.pr); });
+    var follow = state.partners.filter(function (p) { return p.followOn && p.followOn.staff === ui.staff; });
+    var note = 'Future Now record: ' + ui.staff + '\n' + recRows.length + (recRows.length === 1 ? ' project, ' : ' projects, ') + partners.length + (partners.length === 1 ? ' partner, ' : ' partners, ') + students + ' students on live or closed projects.\n' +
+      recRows.map(function (r) {
+        return '- ' + r.pr.ref + ' · ' + r.roles.join(' and ') + ' · ' + r.c.title + ' · ' + partnerName(r.c) + ' · ' + format(r.c.format).name + ' · ' + stageLabel(r.pr.stage) +
+          (r.pr.closeout ? ' · partner rating ' + r.pr.closeout.rating + '/5' : '');
+      }).join('\n') +
+      (follow.length ? '\nPaid follow-on: ' + follow.map(function (p) { return p.followOn.type + ' for ' + p.name + ' (£' + p.followOn.value.toLocaleString('en-GB') + ', ' + p.followOn.status.toLowerCase() + ')'; }).join('; ') : '');
+    var table = recRows.length
+      ? '<div class="scroll"><table class="tbl"><thead><tr><th>Reference</th><th>Role</th><th>Challenge</th><th>Stage</th></tr></thead><tbody>' + recRows.map(function (r) {
+          return '<tr><td><a href="#project-' + hashFor(r.pr.ref) + '" data-nav="project-' + hashFor(r.pr.ref) + '"><span class="ref">' + r.pr.ref + '</span></a></td><td>' + esc(r.roles.join(', ')) + '</td>' +
+            '<td><strong>' + esc(r.c.title) + '</strong><span class="small muted">' + esc(partnerName(r.c)) + '</span></td><td>' + chipStage(r.pr.stage) + '</td></tr>';
+        }).join('') + '</tbody></table></div>'
+      : '<p class="note">No projects yet for this person.</p>';
+    var opts = names.map(function (n) { return '<option' + (n === ui.staff ? ' selected' : '') + '>' + esc(n) + '</option>'; }).join('');
+    return '' +
+      '<div class="head"><h1>Staff</h1>' +
+      '<p class="lede">The hub already knows who led, hosted or brokered each project. It turns that into a record staff can use as evidence of innovation and knowledge exchange, with no extra logging.</p></div>' +
+      '<section class="stack"><div class="head-row"><h2>IKE Fellows, 2027/28</h2><span><strong class="num">' + onTraj + ' of ' + state.fellows.length + '</strong> on a trajectory</span></div>' +
+        '<p class="lede">A Fellow counts as on a trajectory when all three are true: an IKE objective in their PDR, an evidence record, and one costed proposal sent to a partner.</p>' +
+        '<div class="scroll"><table class="tbl"><thead><tr><th>Fellow</th><th>IKE objective</th><th>Evidence</th><th>Costed proposal</th><th>Status</th></tr></thead><tbody>' + fRows + '</tbody></table></div>' +
+      '</section>' +
+      '<section class="stack"><h2>Support for each lead</h2>' +
+        '<p class="lede">Each Future Now lead works with a student associate on placement, who drafts briefs, chases confirmations and builds project pages. The associates are not named here, because the hub holds no student data.</p>' +
+        '<div class="scroll"><table class="tbl"><thead><tr><th>Institute</th><th>Future Now lead</th><th>Support</th></tr></thead><tbody>' +
+        Object.keys(INST).map(function (k) { return '<tr><td>' + esc(INST[k].code + ' · ' + INST[k].area) + '</td><td>' + esc(LEADS[k]) + '</td><td>One student associate, on placement</td></tr>'; }).join('') +
+        '</tbody></table></div>' +
+      '</section>' +
+      '<section class="stack"><h2>Staff project record</h2>' +
+        '<div class="field" style="max-width:320px"><label for="staff-pick">Member of staff</label><select id="staff-pick">' + opts + '</select></div>' +
+        '<div class="split"><div>' + table + '</div><div>' + copyBlock('staff-note', 'Evidence note, ready to copy', note) + '</div></div>' +
+      '</section>';
+  }
+
+  function notFound(msg, nav, label) {
+    return '<div class="head"><h1>Not found</h1><p class="note">' + esc(msg) + '</p><p><a href="#' + nav + '" data-nav="' + nav + '">' + esc(label) + '</a></p></div>';
+  }
+
+  /* ---------- routing and rendering ---------- */
+  function parseRoute(r) {
+    r = String(r || '').replace(/^#/, '').toLowerCase();
+    if (r.indexOf('project-') === 0) return { view: 'project', ref: r.slice(8).toUpperCase(), nav: 'projects' };
+    if (r.indexOf('page-') === 0) return { view: 'page', ref: r.slice(5).toUpperCase(), nav: 'showcase' };
+    if (r.indexOf('match-') === 0) return { view: 'match', id: r.slice(6), nav: 'challenges' };
+    if (VIEWS.indexOf(r) !== -1) return { view: r, nav: r };
+    return { view: 'dashboard', nav: 'dashboard' };
+  }
+  function render() {
+    var route = parseRoute(currentRoute);
+    var app = document.getElementById('app');
+    var activeId = document.activeElement && document.activeElement.id;
+    var html;
+    switch (route.view) {
+      case 'formats': html = viewFormats(); break;
+      case 'modules': html = viewModules(); break;
+      case 'challenges': html = viewChallenges(); break;
+      case 'match': html = viewMatch(route.id); break;
+      case 'projects': html = viewProjects(); break;
+      case 'project': html = viewProject(route.ref); break;
+      case 'page': html = viewPage(route.ref); break;
+      case 'showcase': html = viewShowcase(); break;
+      case 'record': html = viewRecord(); break;
+      case 'partners': html = viewPartners(); break;
+      case 'staff': html = viewStaff(); break;
+      default: html = viewDashboard();
+    }
+    app.innerHTML = html;
+    var links = document.querySelectorAll('#tabrow a');
+    for (var i = 0; i < links.length; i++) {
+      if (links[i].getAttribute('data-nav') === route.nav) links[i].setAttribute('aria-current', 'page');
+      else links[i].removeAttribute('aria-current');
+    }
+    if (activeId) {
+      var el = document.getElementById(activeId);
+      if (el && app.contains(el)) { try { el.focus({ preventScroll: true }); } catch (e) { /* ignore */ } }
+    }
+  }
+  function go(route, keepScroll) {
+    currentRoute = route;
+    try { if (window.location.hash !== '#' + route) window.location.hash = route; } catch (e) { /* ignore */ }
+    render();
+    if (!keepScroll) { try { window.scrollTo(0, 0); } catch (e) { /* ignore */ } }
+    var cur = document.querySelector('#tabrow a[aria-current="page"]');
+    if (cur && cur.scrollIntoView) { try { cur.scrollIntoView({ block: 'nearest', inline: 'nearest' }); } catch (e) { /* ignore */ } }
+  }
+
+  /* ---------- actions ---------- */
+  function addLog(pr, text) { pr.log.push({ date: DEMO_TODAY, text: text }); }
+
+  function advance(ref) {
+    var pr = proj(ref);
+    if (!pr) return;
+    var c = chal(pr.challengeId);
+    if (pr.stage === 'matched') {
+      if (c.tier === 'live') { pr.stage = 'partner'; addLog(pr, 'Brief sent to the partner'); }
+      else { pr.stage = 'module'; addLog(pr, 'Brief sent to the module leader'); }
+    } else if (pr.stage === 'partner') { pr.stage = 'module'; addLog(pr, 'Partner confirmed the brief'); }
+    else if (pr.stage === 'module') { pr.stage = 'approved'; addLog(pr, 'Module leader approved'); }
+    else if (pr.stage === 'approved') { pr.stage = 'live'; addLog(pr, 'Project started'); }
+    save();
+    render();
+    toast(pr.ref + ': ' + stageLabel(pr.stage).toLowerCase());
+  }
+
+  function createProject(chId, modId) {
+    var c = chal(chId), m = mod(modId);
+    if (!c || !m || projectFor(c) || !fit(c, m).eligible) return;
+    var pr = { ref: nextRef(), challengeId: c.id, moduleId: m.id, stage: 'matched', period: semName(m.semester) + ', 2028/29', log: [], closeout: null };
+    addLog(pr, 'Matched to ' + m.code + '. Brief drafted');
+    state.projects.push(pr);
+    save();
+    go('project-' + hashFor(pr.ref));
+    toast('Created ' + pr.ref);
+  }
+
+  function val(id) { var el = document.getElementById(id); return el ? String(el.value).trim() : ''; }
+  function showMsg(id, text) { var el = document.getElementById(id); if (el) { el.textContent = text; el.hidden = !text; } }
+
+  function submitChallenge() {
+    var title = val('ch-title'), issue = val('ch-issue'), tier = val('ch-tier');
+    var partnerId = val('ch-partner'), newName = val('ch-newpartner');
+    if (!title || !issue) return showMsg('ch-msg', 'Add a title and say what the issue is.');
+    if (tier !== 'open' && !partnerId && !newName) return showMsg('ch-msg', 'Choose a partner or name a new organisation. Only an open question can have no partner.');
+    var source = val('ch-source');
+    if (newName) {
+      var p = { id: nextId(state.partners, 'p'), name: newName, sector: 'To be confirmed', source: source, contact: 'Contact to be confirmed', extras: [], followOn: null };
+      state.partners.push(p);
+      partnerId = p.id;
+    }
+    var consentEl = document.getElementById('ch-consent');
+    var c = { id: nextId(state.challenges, 'c'), title: title, partnerId: tier === 'open' ? null : (partnerId || null), format: val('ch-format'), tier: tier, source: source,
+      platform: val('ch-platform'), themeId: null, semester: val('ch-sem') || 'any', consent: !!(consentEl && consentEl.checked),
+      issue: issue, background: val('ch-background') || 'Not given.', outcome: val('ch-outcome') || 'Not given.' };
+    state.challenges.push(c);
+    save();
+    go('match-' + c.id);
+    toast('Challenge added. Now find it a module.');
+  }
+
+  function submitModule() {
+    var code = val('mod-code'), title = val('mod-title'), leader = val('mod-leader');
+    var formats = [];
+    var boxes = document.querySelectorAll('input[name="mod-format"]');
+    for (var i = 0; i < boxes.length; i++) if (boxes[i].checked) formats.push(boxes[i].value);
+    if (!code || !title || !leader) return showMsg('mod-msg', 'Add a code, a title and a module leader.');
+    if (!formats.length) return showMsg('mod-msg', 'Tick at least one format the module can host.');
+    var cohort = Math.max(1, Math.min(999, parseInt(val('mod-cohort'), 10) || 1));
+    var capacity = Math.max(1, Math.min(20, parseInt(val('mod-capacity'), 10) || 1));
+    state.modules.push({ id: nextId(state.modules, 'm'), code: code.toUpperCase(), title: title, inst: val('mod-inst') || 'ilass', subject: val('mod-subject') || 'Subject to be confirmed',
+      level: parseInt(val('mod-level'), 10) || 5, semester: val('mod-sem') || 'S1', cohort: cohort, formats: formats, leader: leader, capacity: capacity });
+    save();
+    render();
+    toast('Module added');
+  }
+
+  function submitClose(ref) {
+    var pr = proj(ref);
+    if (!pr || pr.stage !== 'live') return;
+    var outputs = val('co-outputs'), summary = val('co-summary');
+    if (!outputs || !summary) return showMsg('co-msg', 'Say what the students produced and add the insight summary. Or use the sample answers.');
+    var ints = [];
+    var boxes = document.querySelectorAll('input[name="co-int"]');
+    for (var i = 0; i < boxes.length; i++) if (boxes[i].checked) ints.push(boxes[i].value);
+    var consentEl = document.getElementById('co-consent');
+    pr.closeout = { students: Math.max(1, Math.min(999, parseInt(val('co-students'), 10) || 1)), rating: Math.max(1, Math.min(5, parseInt(val('co-rating'), 10) || 5)),
+      quoteConsent: !!(consentEl && consentEl.checked), interests: ints, outputs: outputs, summary: summary, quote: val('co-quote') };
+    pr.stage = 'closed';
+    addLog(pr, 'Project closed');
+    save();
+    render();
+    try { window.scrollTo(0, 0); } catch (e) { /* ignore */ }
+    toast(pr.ref + ' closed');
+  }
+
+  function fillSample() {
+    var set = function (id, v) { var el = document.getElementById(id); if (el) el.value = v; };
+    set('co-outputs', 'A set of tested resources handed over to the partner, with a short guide to using them.');
+    set('co-summary', 'Students tested their work with the people it is meant for and changed it in response. The partner received a version ready to use and three suggestions for what to do next.');
+    set('co-quote', 'The students listened, came back with something we could use straight away, and were a pleasure to work with.');
+    ['challenge', 'training'].forEach(function (i) { var el = document.getElementById('co-int-' + i); if (el) el.checked = true; });
+    showMsg('co-msg', '');
+  }
+
+  /* ---------- student record ---------- */
+  function refreshRecord() {
+    var box = document.getElementById('rec-card-box');
+    if (box) box.innerHTML = recordCard();
+    var t = recordTexts();
+    var cv = document.getElementById('rec-cv'), li = document.getElementById('rec-li');
+    if (t && cv) cv.value = t.cv;
+    if (t && li) li.value = t.li;
+    var img = document.getElementById('rec-image-box');
+    if (img) img.hidden = true;
+  }
+
+  function wrapLines(ctx, text, maxWidth, maxLines) {
+    var words = String(text).split(/\s+/), lines = [], line = '';
+    for (var i = 0; i < words.length; i++) {
+      var test = line ? line + ' ' + words[i] : words[i];
+      if (ctx.measureText(test).width > maxWidth && line) { lines.push(line); line = words[i]; }
+      else line = test;
+    }
+    if (line) lines.push(line);
+    if (lines.length > maxLines) {
+      lines = lines.slice(0, maxLines);
+      var last = lines[maxLines - 1];
+      while (last.length > 1 && ctx.measureText(last + '…').width > maxWidth) last = last.slice(0, -1);
+      lines[maxLines - 1] = last.replace(/[\s,;:.]+$/, '') + '…';
+    }
+    return lines;
+  }
+
+  function drawRecord() {
+    var t = recordTexts();
+    if (!t) return null;
+    var W = 1400, H = 990, M = 80;
+    var cv = document.createElement('canvas');
+    cv.width = W; cv.height = H;
+    var x = cv.getContext('2d');
+    var HEAD = 'Aptos, Arial, Helvetica, sans-serif', BODY = HEAD, MONO = 'Consolas, "Cascadia Mono", Menlo, monospace';
+    var NAVY = '#E5007E', INK = '#111111', MUTE = '#57505A', AMBER = '#E5007E', ICE = '#FEE6F3', LINE = '#DDD3D9';
+    x.fillStyle = '#FFFFFF'; x.fillRect(0, 0, W, H);
+    x.fillStyle = NAVY; x.fillRect(0, 0, W, 150);
+    x.fillStyle = INK; x.fillRect(0, 150, W, 6);
+    x.textBaseline = 'alphabetic';
+    var tx = M;
+    var logo = document.getElementById('fn-logo');
+    if (logo && logo.complete && logo.naturalWidth) {
+      var lh = 126, lw = Math.round(lh * logo.naturalWidth / logo.naturalHeight);
+      try { x.drawImage(logo, M, 12, lw, lh); tx = M + lw + 32; } catch (e) { tx = M; }
+    }
+    x.fillStyle = '#FFFFFF'; x.font = 'italic 700 46px ' + HEAD; x.fillText('Project record', tx, 92);
+    x.font = '700 30px ' + MONO; x.textAlign = 'right'; x.fillText(t.pr.ref, W - M, 92); x.textAlign = 'left';
+
+    var y = 238;
+    x.fillStyle = INK; x.font = '700 58px ' + HEAD;
+    wrapLines(x, rec.name.trim() || 'Your name', W - 2 * M, 1).forEach(function (l) { x.fillText(l, M, y); });
+    y += 42; x.fillStyle = MUTE; x.font = '24px ' + BODY; x.fillText('took part in', M, y);
+    y += 56; x.fillStyle = INK; x.font = 'italic 700 40px ' + HEAD;
+    wrapLines(x, t.c.title, W - 2 * M, 2).forEach(function (l) { x.fillText(l, M, y); y += 50; });
+
+    y += 4; x.fillStyle = LINE; x.fillRect(M, y, W - 2 * M, 2); y += 44;
+    var facts = [['PARTNER', partnerName(t.c)], ['FORMAT', t.f.name], ['MODULE', t.m.title + ', Level ' + t.m.level], ['WHEN', t.pr.period]];
+    var colW = (W - 2 * M) / 2;
+    facts.forEach(function (f, i) {
+      var fx = M + (i % 2) * colW, fy = y + Math.floor(i / 2) * 74;
+      x.fillStyle = MUTE; x.font = '700 16px ' + BODY; x.fillText(f[0], fx, fy);
+      x.fillStyle = INK; x.font = '26px ' + BODY;
+      wrapLines(x, f[1], colW - 30, 1).forEach(function (l) { x.fillText(l, fx, fy + 32); });
+    });
+    y += 148; x.fillStyle = LINE; x.fillRect(M, y - 26, W - 2 * M, 2); y += 22;
+
+    x.fillStyle = MUTE; x.font = '700 16px ' + BODY; x.fillText('MY CONTRIBUTION', M, y); y += 36;
+    x.fillStyle = INK; x.font = '26px ' + BODY;
+    wrapLines(x, t.contrib || 'Describe what you did in a sentence or two.', W - 2 * M, 3).forEach(function (l) { x.fillText(l, M, y); y += 36; });
+    if (rec.skills.length) {
+      y += 8; x.fillStyle = MUTE; x.font = '700 16px ' + BODY; x.fillText('SKILLS', M, y); y += 34;
+      x.fillStyle = INK; x.font = '26px ' + BODY;
+      wrapLines(x, rec.skills.join(', '), W - 2 * M, 1).forEach(function (l) { x.fillText(l, M, y); });
+      y += 30;
+    }
+    var co = t.pr.closeout;
+    if (co && co.quote && co.quoteConsent && y < 770) {
+      y += 22; x.fillStyle = AMBER; x.fillRect(M, y - 24, 5, 86);
+      x.fillStyle = INK; x.font = 'italic 25px ' + HEAD;
+      wrapLines(x, '“' + co.quote + '”', W - 2 * M - 30, 2).forEach(function (l) { x.fillText(l, M + 24, y); y += 34; });
+      x.fillStyle = MUTE; x.font = '20px ' + BODY; x.fillText(partnerName(t.c), M + 24, y + 2);
+    }
+    x.fillStyle = ICE; x.fillRect(0, H - 86, W, 86);
+    x.fillStyle = INK; x.font = '22px ' + BODY; x.fillText('Project page: ' + t.url, M, H - 36);
+    x.fillStyle = MUTE; x.font = '700 16px ' + BODY; x.textAlign = 'right'; x.fillText('PROTOTYPE  ·  SAMPLE DATA', W - M, H - 38); x.textAlign = 'left';
+    return cv;
+  }
+
+  function makeImage() {
+    var run = function () {
+      var cv = drawRecord();
+      if (!cv) return;
+      var box = document.getElementById('rec-image-box'), img = document.getElementById('rec-image'), help = document.getElementById('rec-image-help');
+      try { img.src = cv.toDataURL('image/png'); box.hidden = false; } catch (e) { toast('The image could not be made in this view.'); return; }
+      if (STANDALONE) {
+        try {
+          var a = document.createElement('a');
+          a.href = img.src; a.download = 'future-now-record-' + rec.ref + '.png';
+          document.body.appendChild(a); a.click(); document.body.removeChild(a);
+          if (help) help.textContent = 'The image has been downloaded. You can also right-click it to save it.';
+        } catch (e2) { /* the image is still shown below */ }
+        return;
+      }
+      if (!downloadsApi) return;
+      cv.toBlob(function (blob) {
+        if (!blob) return;
+        downloadsApi.save({ filename: 'future-now-record-' + rec.ref + '.png', data: blob }).then(function () {
+          toast('Image saved');
+        }, function (err) {
+          if (help && (!err || err.code !== 'declined')) help.textContent = 'Press and hold the image, or right-click it, to save it.';
+        });
+      }, 'image/png');
+    };
+    if (document.fonts && document.fonts.ready && typeof document.fonts.ready.then === 'function') {
+      var done = false;
+      var once = function () { if (!done) { done = true; run(); } };
+      document.fonts.ready.then(once, once);
+      setTimeout(once, 600);
+    } else { run(); }
+  }
+
+  /* ---------- events ---------- */
+  document.addEventListener('click', function (e) {
+    var nav = e.target.closest ? e.target.closest('[data-nav]') : null;
+    if (nav) {
+      e.preventDefault();
+      if (nav.getAttribute('data-stage')) ui.stage = nav.getAttribute('data-stage');
+      else if (nav.getAttribute('data-nav') === 'projects' && nav.parentNode && nav.parentNode.id === 'tabrow') ui.stage = 'all';
+      go(nav.getAttribute('data-nav'));
+      return;
+    }
+    var el = e.target.closest ? e.target.closest('[data-action]') : null;
+    if (!el) return;
+    var a = el.getAttribute('data-action');
+    if (a === 'copy') copyFrom(el.getAttribute('data-target'));
+    else if (a === 'advance') advance(el.getAttribute('data-ref'));
+    else if (a === 'changes') {
+      var pr = proj(el.getAttribute('data-ref'));
+      if (pr && pr.stage === 'module') { pr.stage = 'matched'; addLog(pr, 'Module leader asked for changes'); save(); render(); toast('Back with the Future Now lead to revise'); }
+    }
+    else if (a === 'create-project') createProject(el.getAttribute('data-ch'), el.getAttribute('data-mod'));
+    else if (a === 'co-sample') fillSample();
+    else if (a === 'route') {
+      var key = el.getAttribute('data-key');
+      if (state.routed.indexOf(key) === -1) state.routed.push(key);
+      save(); render(); toast('Recorded');
+    }
+    else if (a === 'make-record') { rec.ref = el.getAttribute('data-ref'); go('record'); }
+    else if (a === 'skill') {
+      var s = el.getAttribute('data-skill'), i = rec.skills.indexOf(s);
+      if (i !== -1) rec.skills.splice(i, 1);
+      else if (rec.skills.length < 4) rec.skills.push(s);
+      else { toast('Four is the most. Remove one first.'); return; }
+      el.setAttribute('aria-pressed', String(rec.skills.indexOf(s) !== -1));
+      refreshRecord();
+    }
+    else if (a === 'rec-image') makeImage();
+    else if (a === 'print') printDoc(el.getAttribute('data-target'));
+    else if (a === 'reset') {
+      var btn = document.getElementById('btn-reset');
+      if (!ui.resetArmed) {
+        ui.resetArmed = true;
+        btn.textContent = 'Click again to reset';
+        setTimeout(function () { ui.resetArmed = false; btn.textContent = 'Reset demo data'; }, 4000);
+      } else {
+        ui.resetArmed = false;
+        btn.textContent = 'Reset demo data';
+        state = seed();
+        rec = { ref: 'FN-27-001', name: '', contribution: '', skills: [] };
+        ui.stage = 'all'; ui.scInst = 'all'; ui.scPlat = 'all'; ui.partnersReady = false; ui.staff = 'Dr Ines Carvalho';
+        save();
+        go('dashboard');
+        toast('Demo data reset');
+      }
+    }
+  });
+
+  document.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var f = e.target;
+    if (f.id === 'form-challenge') submitChallenge();
+    else if (f.id === 'form-module') submitModule();
+    else if (f.id === 'form-close') submitClose(f.getAttribute('data-ref'));
+  });
+
+  document.addEventListener('change', function (e) {
+    var t = e.target;
+    if (!t || !t.id) return;
+    if (t.id === 'pf-stage') { ui.stage = t.value; render(); }
+    else if (t.id === 'sc-inst') { ui.scInst = t.value; render(); }
+    else if (t.id === 'sc-plat') { ui.scPlat = t.value; render(); }
+    else if (t.id === 'staff-pick') { ui.staff = t.value; render(); }
+    else if (t.id === 'pt-ready') { ui.partnersReady = t.checked; render(); }
+    else if (t.id === 'rec-project') { rec.ref = t.value; render(); }
+    else if (t.getAttribute('data-fellow')) {
+      var id = t.getAttribute('data-fellow'), key = t.getAttribute('data-key');
+      state.fellows.forEach(function (f) { if (f.id === id) f[key] = t.checked; });
+      save(); render();
+    }
+  });
+
+  document.addEventListener('input', function (e) {
+    var t = e.target;
+    if (!t) return;
+    if (t.id === 'rec-name') { rec.name = t.value; refreshRecord(); }
+    else if (t.id === 'rec-contribution') { rec.contribution = t.value; refreshRecord(); }
+  });
+
+  window.addEventListener('hashchange', function () {
+    var h = String(window.location.hash || '').replace(/^#/, '');
+    if (h !== currentRoute) { currentRoute = h; render(); }
+  });
+
+  /* ---------- start ---------- */
+  try {
+    if (window.claude && typeof window.claude.use === 'function') {
+      window.claude.use('downloads').then(function (d) { downloadsApi = d || null; }, function () { downloadsApi = null; });
+    }
+  } catch (e) { downloadsApi = null; }
+
+  var startHash = '';
+  try { startHash = String(window.location.hash || '').replace(/^#/, ''); } catch (e) { startHash = ''; }
+  currentRoute = startHash || 'dashboard';
+  render();
+})();
+</script>
+
+</body>
+</html>
